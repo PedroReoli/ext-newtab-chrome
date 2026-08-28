@@ -1,0 +1,110 @@
+/* -------------------------------------------------------------
+ * Theme Variables, Keyframe Animations & Dark Custom Scrollbars
+ * ------------------------------------------------------------- */
+:root {
+  /* Default Zinc Dark Theme */
+  --bg-color: #09090b;
+  --bg-surface: #121215;
+  --card-bg: #18181c;
+  --card-hover-bg: #24242a;
+  --card-border: rgba(255, 255, 255, 0.08);
+  --card-border-hover: rgba(255, 255, 255, 0.22);
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-glow: rgba(59, 130, 246, 0.2);
+  --danger-color: #ef4444;
+  --danger-hover: #dc2626;
+  --success-color: #10b981;
+  --modal-bg: #18181b;
+  --input-bg: #09090b;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Theme Variant: AMOLED Pitch Black */
+[data-theme="amoled"] {
+  --bg-color: #000000;
+  --bg-surface: #0a0a0a;
+  --card-bg: #121212;
+  --card-hover-bg: #1e1e1e;
+  --card-border: rgba(255, 255, 255, 0.12);
+  --modal-bg: #0d0d0d;
+}
+
+/* Theme Variant: Midnight Blue */
+[data-theme="midnight"] {
+  --bg-color: #0b0f19;
+  --bg-surface: #111827;
+  --card-bg: #1f2937;
+  --card-hover-bg: #374151;
+  --card-border: rgba(255, 255, 255, 0.1);
+  --accent-color: #6366f1;
+  --accent-hover: #4f46e5;
+  --modal-bg: #111827;
+}
+
+/* Theme Variant: Cyber Emerald */
+[data-theme="emerald"] {
+  --bg-color: #061412;
+  --bg-surface: #0b221e;
+  --card-bg: #12332d;
+  --card-hover-bg: #1b473f;
+  --card-border: rgba(16, 185, 129, 0.2);
+  --accent-color: #10b981;
+  --accent-hover: #059669;
+  --modal-bg: #0b221e;
+}
+
+/* -------------------------------------------------------------
+ * Custom Sleek Dark Scrollbar
+ * ------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) var(--bg-surface);
+}
+
+/* Staggered Card Entrance Animations */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-entrance {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: calc(var(--index, 0) * 0.035s);
+  opacity: 0;
+}
