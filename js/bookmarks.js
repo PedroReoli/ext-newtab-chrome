@@ -1,11 +1,16 @@
 /**
- * Bookmarks Engine: Direct User Folder Hierarchy (No Root Wrapper Headers)
+ * Bookmarks Engine: Distinct Explorer vs Ribbon Modes, Interactive Clickable Breadcrumbs, Fluid Non-Blocking Folder Tree & Shared Cards Grid
  */
 
 let allBookmarkNodes = [];
 let currentFolderId = '1';
 let selectedBookmarkIds = new Set();
-let currentBookmarksViewMode = 'explorer'; // 'explorer' or 'ribbon'
+let currentBookmarksViewMode = 'explorer';
+
+// Smart Filters State
+let filterRootFolderId = 'all';
+let filterDepthLevel = 'all';
+let filterHideEmpty = false;
 
 function initBookmarksModule() {
   const sidebarEl = document.getElementById('folder-tree-list');
@@ -19,6 +24,11 @@ function initBookmarksModule() {
   const modeExplorerBtn = document.getElementById('mode-explorer-btn');
   const modeRibbonBtn = document.getElementById('mode-ribbon-btn');
 
+  // Smart Filters Controls
+  const rootSelect = document.getElementById('filter-root-folder-select');
+  const depthSelect = document.getElementById('filter-hierarchy-depth-select');
+  const hideEmptyCb = document.getElementById('filter-hide-empty-folders');
+
   if (!sidebarEl) return;
 
   loadChromeBookmarks();
@@ -29,7 +39,36 @@ function initBookmarksModule() {
   }
 
   if (collapseAllBtn) {
-    collapseAllBtn.addEventListener('click', collapseAllFolders);
+    collapseAllBtn.addEventListener('click', collapseAllFolderTree);
+  }
+
+  if (rootSelect) {
+    rootSelect.addEventListener('change', (e) => {
+      filterRootFolderId = e.target.value;
+      if (filterRootFolderId !== 'all') {
+        currentFolderId = filterRootFolderId;
+      }
+      renderSidebarFolderTree(allBookmarkNodes);
+      renderHorizontalRibbon(allBookmarkNodes);
+      renderFolderContents(currentFolderId);
+    });
+  }
+
+  if (depthSelect) {
+    depthSelect.addEventListener('change', (e) => {
+      filterDepthLevel = e.target.value;
+      renderSidebarFolderTree(allBookmarkNodes);
+      renderFolderContents(currentFolderId);
+    });
+  }
+
+  if (hideEmptyCb) {
+    hideEmptyCb.addEventListener('change', (e) => {
+      filterHideEmpty = e.target.checked;
+      renderSidebarFolderTree(allBookmarkNodes);
+      renderHorizontalRibbon(allBookmarkNodes);
+      renderFolderContents(currentFolderId);
+    });
   }
 
   if (searchInput) {
@@ -68,7 +107,8 @@ function loadChromeBookmarks() {
     chrome.bookmarks.getTree((treeNodes) => {
       allBookmarkNodes = treeNodes;
 
-      // Auto-select first user folder inside Bookmark Bar
+      populateRootFolderSelect(treeNodes);
+
       const barNode = findBookmarkNodeById(treeNodes, '1');
       if (barNode && barNode.children && barNode.children.length > 0) {
         const firstUserFolder = barNode.children.find(c => c.children) || barNode.children[0];
@@ -78,56 +118,78 @@ function loadChromeBookmarks() {
       }
 
       renderSidebarFolderTree(treeNodes);
-      renderFolderContents(currentFolderId);
       renderHorizontalRibbon(treeNodes);
+      renderFolderContents(currentFolderId);
     });
   } else {
     allBookmarkNodes = getDemoBookmarkTree();
+    populateRootFolderSelect(allBookmarkNodes);
     renderSidebarFolderTree(allBookmarkNodes);
-    renderFolderContents('101');
     renderHorizontalRibbon(allBookmarkNodes);
+    renderFolderContents('101');
+  }
+}
+
+function populateRootFolderSelect(treeNodes) {
+  const rootSelect = document.getElementById('filter-root-folder-select');
+  if (!rootSelect) return;
+
+  rootSelect.innerHTML = '<option value="all">Todas as Pastas Mãe</option>';
+  const rootNode = findBookmarkNodeById(treeNodes, '1') || treeNodes[0];
+
+  if (rootNode && rootNode.children) {
+    rootNode.children.forEach(child => {
+      if (child.children) {
+        const opt = document.createElement('option');
+        opt.value = child.id;
+        opt.textContent = child.title;
+        rootSelect.appendChild(opt);
+      }
+    });
   }
 }
 
 function setBookmarksViewMode(mode) {
   currentBookmarksViewMode = mode;
-  const explorerContainer = document.getElementById('bookmarks-explorer-container');
-  const ribbonContainer = document.getElementById('bookmarks-ribbon-container');
+  const viewWrapper = document.getElementById('bookmarks-view');
   const modeExplorerBtn = document.getElementById('mode-explorer-btn');
   const modeRibbonBtn = document.getElementById('mode-ribbon-btn');
 
   if (mode === 'ribbon') {
-    explorerContainer.classList.add('hidden');
-    ribbonContainer.classList.remove('hidden');
-    modeExplorerBtn.classList.remove('active');
-    modeRibbonBtn.classList.add('active');
+    if (viewWrapper) {
+      viewWrapper.classList.remove('mode-explorer');
+      viewWrapper.classList.add('mode-ribbon');
+    }
+    if (modeExplorerBtn) modeExplorerBtn.classList.remove('active');
+    if (modeRibbonBtn) modeRibbonBtn.classList.add('active');
+    renderHorizontalRibbon(allBookmarkNodes);
+    renderFolderContents(currentFolderId);
+    showToast('Modo Barra Horizontal (Ribbon) Ativado');
   } else {
-    ribbonContainer.classList.add('hidden');
-    explorerContainer.classList.remove('hidden');
-    modeRibbonBtn.classList.remove('active');
-    modeExplorerBtn.classList.add('active');
+    if (viewWrapper) {
+      viewWrapper.classList.remove('mode-ribbon');
+      viewWrapper.classList.add('mode-explorer');
+    }
+    if (modeRibbonBtn) modeRibbonBtn.classList.remove('active');
+    if (modeExplorerBtn) modeExplorerBtn.classList.add('active');
+    renderSidebarFolderTree(allBookmarkNodes);
+    renderFolderContents(currentFolderId);
+    showToast('Modo Explorer (2 Colunas) Ativado');
   }
 }
 
-function showToast(message) {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const toast = document.createElement('div');
-  toast.className = 'toast-message';
-  toast.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--accent-color); flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>${message}</span>`;
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
+function countBookmarksRecursive(node) {
+  if (!node) return 0;
+  if (node.url) return 1;
+  let count = 0;
+  if (node.children) {
+    node.children.forEach(child => {
+      count += countBookmarksRecursive(child);
+    });
+  }
+  return count;
 }
 
-/**
- * Horizontal Bookmark Ribbon (Style Native Browser Bar)
- */
 function renderHorizontalRibbon(treeNodes) {
   const ribbonList = document.getElementById('bookmark-ribbon-list');
   if (!ribbonList) return;
@@ -139,31 +201,25 @@ function renderHorizontalRibbon(treeNodes) {
 
   rootNode.children.forEach(child => {
     if (child.children) {
+      const totalCount = countBookmarksRecursive(child);
+      if (filterHideEmpty && totalCount === 0) return;
+
       const folderPill = document.createElement('div');
-      folderPill.className = 'ribbon-folder-item';
+      const isSelected = child.id === currentFolderId;
+      folderPill.className = `ribbon-folder-item ${isSelected ? 'active' : ''}`;
 
       folderPill.innerHTML = `
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent-color);">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
         </svg>
-        <span>${child.title}</span>
-        <div class="ribbon-dropdown"></div>
+        <span>${child.title} (${totalCount})</span>
       `;
 
-      const dropdown = folderPill.querySelector('.ribbon-dropdown');
-      child.children.forEach(sub => {
-        if (sub.url) {
-          const linkItem = document.createElement('a');
-          linkItem.className = 'ribbon-link-item';
-          linkItem.href = sub.url;
-          linkItem.target = '_self';
-          const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(sub.url).hostname}&sz=32`;
-          linkItem.innerHTML = `
-            <img src="${faviconUrl}" width="14" height="14" style="border-radius:2px;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%23a1a1aa\\' stroke-width=\\'2\\'><circle cx=\\'12\\' cy=\\'12\\' r=\\'10\\'/></svg>';">
-            <span>${sub.title || sub.url}</span>
-          `;
-          dropdown.appendChild(linkItem);
-        }
+      folderPill.addEventListener('click', () => {
+        currentFolderId = child.id;
+        document.querySelectorAll('.ribbon-folder-item').forEach(p => p.classList.remove('active'));
+        folderPill.classList.add('active');
+        renderFolderContents(currentFolderId);
       });
 
       ribbonList.appendChild(folderPill);
@@ -171,18 +227,16 @@ function renderHorizontalRibbon(treeNodes) {
   });
 }
 
-function collapseAllFolders() {
-  document.querySelectorAll('.folder-subchildren-wrapper').forEach(wrapper => {
-    wrapper.style.display = 'none';
-  });
-  document.querySelectorAll('.folder-toggle-chevron').forEach(chevron => {
-    chevron.classList.remove('expanded');
-  });
+function collapseAllFolderTree() {
+  const wrappers = document.querySelectorAll('.folder-subchildren-wrapper');
+  const chevrons = document.querySelectorAll('.folder-toggle-chevron');
+
+  wrappers.forEach(w => w.style.display = 'none');
+  chevrons.forEach(c => c.classList.remove('expanded'));
+
+  showToast('Todas as subpastas foram recolhidas.');
 }
 
-/**
- * True Recursive Hierarchical Sidebar Renderer (Direct User Folders, Root Wrappers Skipped)
- */
 function renderSidebarFolderTree(treeNodes) {
   const sidebarEl = document.getElementById('folder-tree-list');
   if (!sidebarEl) return;
@@ -192,7 +246,6 @@ function renderSidebarFolderTree(treeNodes) {
   function renderFolderNode(node, depth, container) {
     if (!node.children) return;
 
-    // Skip root wrappers ('0', '1', '2') and render their user subfolders directly at top level
     if (node.id === '0' || node.id === '1' || node.id === '2') {
       node.children.forEach(child => {
         if (child.children) {
@@ -202,15 +255,29 @@ function renderSidebarFolderTree(treeNodes) {
       return;
     }
 
+    const totalRecursiveCount = countBookmarksRecursive(node);
+
+    if (filterHideEmpty && totalRecursiveCount === 0) return;
+
+    if (filterRootFolderId !== 'all') {
+      const isDescendantOrSelf = isNodeInSubtree(node.id, filterRootFolderId);
+      if (!isDescendantOrSelf) return;
+    }
+
+    if (filterDepthLevel !== 'all') {
+      const currentLevel = depth + 1;
+      if (filterDepthLevel === '1' && currentLevel !== 1) return;
+      if (filterDepthLevel === '2' && currentLevel !== 2) return;
+      if (filterDepthLevel === '3' && currentLevel < 3) return;
+    }
+
     const hasSubfolders = node.children.some(c => c.children);
-    const itemCount = node.children.filter(c => c.url).length;
     const folderTitleText = node.title || 'Pasta';
 
     const folderItem = document.createElement('div');
     folderItem.className = `folder-tree-item draggable-item ${node.id === currentFolderId ? 'active' : ''}`;
     folderItem.style.paddingLeft = `calc(0.4rem + ${depth * 0.75}rem)`;
     folderItem.setAttribute('data-folder-id', node.id);
-    folderItem.setAttribute('draggable', 'true');
 
     folderItem.innerHTML = `
       <div class="folder-info">
@@ -230,41 +297,27 @@ function renderSidebarFolderTree(treeNodes) {
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
           </svg>
         </button>
-        <span class="folder-count-badge">${itemCount}</span>
+        <span class="folder-count-badge">${totalRecursiveCount}</span>
       </div>
     `;
 
     const childrenContainer = document.createElement('div');
     childrenContainer.className = 'folder-subchildren-wrapper';
 
-    folderItem.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', JSON.stringify({ id: node.id, type: 'folder' }));
-      folderItem.classList.add('dragging');
-    });
-
-    folderItem.addEventListener('dragend', () => {
-      folderItem.classList.remove('dragging');
-    });
-
-    folderItem.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      folderItem.classList.add('drag-over');
-    });
-
-    folderItem.addEventListener('dragleave', () => {
-      folderItem.classList.remove('drag-over');
-    });
-
-    folderItem.addEventListener('drop', (e) => {
-      e.preventDefault();
-      folderItem.classList.remove('drag-over');
-      try {
-        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-        if (data && data.id && data.id !== node.id) {
-          moveBookmarkToTargetFolder(data.id, node.id, folderTitleText);
+    const chevron = folderItem.querySelector('.folder-toggle-chevron');
+    if (chevron) {
+      chevron.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isExp = chevron.classList.contains('expanded');
+        if (isExp) {
+          childrenContainer.style.display = 'none';
+          chevron.classList.remove('expanded');
+        } else {
+          childrenContainer.style.display = 'block';
+          chevron.classList.add('expanded');
         }
-      } catch (err) {}
-    });
+      });
+    }
 
     folderItem.addEventListener('click', (e) => {
       if (e.target.closest('.folder-edit-btn')) return;
@@ -274,38 +327,13 @@ function renderSidebarFolderTree(treeNodes) {
       document.querySelectorAll('.folder-tree-item').forEach(el => el.classList.remove('active'));
       folderItem.classList.add('active');
 
-      const chevron = folderItem.querySelector('.folder-toggle-chevron');
-      if (chevron && hasSubfolders) {
-        if (childrenContainer.style.display === 'none') {
-          childrenContainer.style.display = 'block';
-          chevron.classList.add('expanded');
-        }
+      if (hasSubfolders && childrenContainer) {
+        childrenContainer.style.display = 'block';
+        if (chevron) chevron.classList.add('expanded');
       }
 
       renderFolderContents(currentFolderId);
     });
-
-    const chevron = folderItem.querySelector('.folder-toggle-chevron');
-    if (chevron) {
-      chevron.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (childrenContainer.style.display === 'none') {
-          childrenContainer.style.display = 'block';
-          chevron.classList.add('expanded');
-        } else {
-          childrenContainer.style.display = 'none';
-          chevron.classList.remove('expanded');
-        }
-      });
-    }
-
-    const editBtn = folderItem.querySelector('.folder-edit-btn');
-    if (editBtn) {
-      editBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        renameFolderItem(node.id, folderTitleText);
-      });
-    }
 
     container.appendChild(folderItem);
 
@@ -322,40 +350,11 @@ function renderSidebarFolderTree(treeNodes) {
   renderFolderNode({ id: '0', children: treeNodes }, 0, sidebarEl);
 }
 
-function moveBookmarkToTargetFolder(sourceId, targetFolderId, targetFolderName) {
-  if (typeof chrome !== 'undefined' && chrome.bookmarks) {
-    chrome.bookmarks.move(sourceId, { parentId: targetFolderId }, () => {
-      showToast(`Item movido para "${targetFolderName}"`);
-      loadChromeBookmarks();
-    });
-  } else {
-    showToast(`[Demo] Movido para "${targetFolderName}"`);
-  }
-}
-
-function getBreadcrumbsPath(nodes, targetId) {
-  const path = [];
-  function searchPath(currentNodes, target) {
-    for (const node of currentNodes) {
-      if (node.id === target) {
-        if (node.id !== '0' && node.id !== '1' && node.id !== '2') {
-          path.unshift(node.title || 'Pasta');
-        }
-        return true;
-      }
-      if (node.children) {
-        if (searchPath(node.children, target)) {
-          if (node.id !== '0' && node.id !== '1' && node.id !== '2') {
-            path.unshift(node.title || 'Pasta');
-          }
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  searchPath(nodes, targetId);
-  return path;
+function isNodeInSubtree(nodeId, rootId) {
+  if (nodeId === rootId) return true;
+  const rootNode = findBookmarkNodeById(allBookmarkNodes, rootId);
+  if (!rootNode) return false;
+  return !!findBookmarkNodeById([rootNode], nodeId);
 }
 
 function renderFolderContents(folderId, filterQuery = '') {
@@ -367,11 +366,38 @@ function renderFolderContents(folderId, filterQuery = '') {
   const folderNode = findBookmarkNodeById(allBookmarkNodes, folderId);
 
   if (breadcrumbsEl) {
-    const path = getBreadcrumbsPath(allBookmarkNodes, folderId);
-    if (path.length > 0) {
-      breadcrumbsEl.innerHTML = path.map(p => `<span>${p}</span>`).join(' <span class="breadcrumb-separator">/</span> ');
+    const pathObjs = getBreadcrumbsObjectsPath(allBookmarkNodes, folderId);
+    breadcrumbsEl.innerHTML = '';
+
+    if (pathObjs.length === 0) {
+      breadcrumbsEl.innerHTML = '<span class="breadcrumb-item-clickable active">Favoritos</span>';
     } else {
-      breadcrumbsEl.innerHTML = '<span>Favoritos</span>';
+      pathObjs.forEach((item, index) => {
+        if (index > 0) {
+          const sep = document.createElement('span');
+          sep.className = 'breadcrumb-separator';
+          sep.textContent = '/';
+          breadcrumbsEl.appendChild(sep);
+        }
+
+        const span = document.createElement('span');
+        span.className = 'breadcrumb-item-clickable';
+        span.textContent = item.title;
+
+        if (item.id === folderId) {
+          span.classList.add('active');
+        }
+
+        span.addEventListener('click', () => {
+          currentFolderId = item.id;
+          selectedBookmarkIds.clear();
+          renderSidebarFolderTree(allBookmarkNodes);
+          renderHorizontalRibbon(allBookmarkNodes);
+          renderFolderContents(currentFolderId);
+        });
+
+        breadcrumbsEl.appendChild(span);
+      });
     }
   }
 
@@ -389,37 +415,27 @@ function renderFolderContents(folderId, filterQuery = '') {
 
   const subFolders = folderNode.children.filter(child => {
     if (!child.children) return false;
+    if (filterHideEmpty && countBookmarksRecursive(child) === 0) return false;
     if (!filterQuery) return true;
     return child.title && child.title.toLowerCase().includes(filterQuery);
   });
 
   if (bookmarkLinks.length === 0 && subFolders.length > 0) {
     subFolders.forEach(subfolder => {
-      const subItemCount = subfolder.children ? subfolder.children.filter(c => c.url).length : 0;
-      const subSubfolderCount = subfolder.children ? subfolder.children.filter(c => c.children).length : 0;
+      const subItemCount = countBookmarksRecursive(subfolder);
 
       const folderCard = document.createElement('div');
       folderCard.className = 'bookmark-card folder-card-panel draggable-item';
-      folderCard.setAttribute('draggable', 'true');
 
       folderCard.innerHTML = `
         <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent-color); flex-shrink:0;">
           <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
         </svg>
         <div class="bookmark-info">
-          <span class="bookmark-title-text" style="font-weight:600;">${subfolder.title}</span>
-          <span class="bookmark-url-text">${subItemCount} favoritos ${subSubfolderCount > 0 ? `• ${subSubfolderCount} pastas` : ''}</span>
+          <span class="bookmark-title-text" title="${subfolder.title}">${subfolder.title}</span>
+          <span class="bookmark-url-text">${subItemCount} favoritos total</span>
         </div>
       `;
-
-      folderCard.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/plain', JSON.stringify({ id: subfolder.id, type: 'folder' }));
-        folderCard.classList.add('dragging');
-      });
-
-      folderCard.addEventListener('dragend', () => {
-        folderCard.classList.remove('dragging');
-      });
 
       folderCard.addEventListener('click', () => {
         currentFolderId = subfolder.id;
@@ -445,13 +461,12 @@ function renderFolderContents(folderId, filterQuery = '') {
     const card = document.createElement('div');
     card.className = `bookmark-card draggable-item ${isSelected ? 'selected' : ''}`;
     card.setAttribute('data-id', bookmark.id);
-    card.setAttribute('draggable', 'true');
 
     const faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(bookmark.url).hostname}&sz=64`;
 
     card.innerHTML = `
       <input type="checkbox" class="bookmark-select-checkbox" data-id="${bookmark.id}" ${isSelected ? 'checked' : ''}>
-      <img class="bookmark-icon" src="${faviconUrl}" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%23a1a1aa\\' stroke-width=\\'2\\'><circle cx=\\'12\\' cy=\\'12\\' r=\\'10\\'/></svg>';">
+      <img class="bookmark-icon" src="${faviconUrl}">
       <div class="bookmark-info">
         <span class="bookmark-title-text" title="${bookmark.title}">${bookmark.title || bookmark.url}</span>
         <span class="bookmark-url-text">${new URL(bookmark.url).hostname}</span>
@@ -466,14 +481,12 @@ function renderFolderContents(folderId, filterQuery = '') {
       </div>
     `;
 
-    card.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', JSON.stringify({ id: bookmark.id, type: 'bookmark' }));
-      card.classList.add('dragging');
-    });
-
-    card.addEventListener('dragend', () => {
-      card.classList.remove('dragging');
-    });
+    const iconImg = card.querySelector('.bookmark-icon');
+    if (iconImg) {
+      iconImg.addEventListener('error', () => {
+        iconImg.src = 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23a1a1aa\' stroke-width=\'2\'><circle cx=\'12\' cy=\'12\' r=\'10\'/></svg>';
+      });
+    }
 
     const cb = card.querySelector('.bookmark-select-checkbox');
     cb.addEventListener('change', (e) => {
@@ -508,35 +521,29 @@ function renderFolderContents(folderId, filterQuery = '') {
   updateBulkToolbarUI();
 }
 
-function renameFolderItem(id, currentTitle) {
-  const newTitle = prompt('Digite o novo nome da pasta:', currentTitle);
-  if (newTitle && newTitle.trim() && newTitle.trim() !== currentTitle) {
-    if (typeof chrome !== 'undefined' && chrome.bookmarks) {
-      chrome.bookmarks.update(id, { title: newTitle.trim() }, () => {
-        showToast('Pasta renomeada com sucesso!');
-        loadChromeBookmarks();
-      });
-    } else {
-      showToast(`[Demo] Renomeado para: ${newTitle.trim()}`);
+function getBreadcrumbsObjectsPath(nodes, targetId) {
+  const path = [];
+  function searchPath(currentNodes, target) {
+    for (const node of currentNodes) {
+      if (node.id === target) {
+        if (node.id !== '0') {
+          path.unshift({ id: node.id, title: node.title || 'Pasta' });
+        }
+        return true;
+      }
+      if (node.children) {
+        if (searchPath(node.children, target)) {
+          if (node.id !== '0') {
+            path.unshift({ id: node.id, title: node.title || 'Pasta' });
+          }
+          return true;
+        }
+      }
     }
+    return false;
   }
-}
-
-function renameBookmarkItem(id, currentTitle, currentUrl) {
-  const newTitle = prompt('Digite o novo nome do favorito:', currentTitle);
-  if (!newTitle || !newTitle.trim()) return;
-
-  const newUrl = prompt('Digite a URL do favorito:', currentUrl);
-  if (!newUrl || !newUrl.trim()) return;
-
-  if (typeof chrome !== 'undefined' && chrome.bookmarks) {
-    chrome.bookmarks.update(id, { title: newTitle.trim(), url: newUrl.trim() }, () => {
-      showToast('Favorito atualizado!');
-      loadChromeBookmarks();
-    });
-  } else {
-    showToast(`[Demo] Favorito renomeado!`);
-  }
+  searchPath(nodes, targetId);
+  return path;
 }
 
 function findBookmarkNodeById(nodes, id) {
@@ -573,7 +580,6 @@ function updateBulkToolbarUI() {
 
 function bulkOpenBookmarks() {
   if (selectedBookmarkIds.size === 0) return;
-
   selectedBookmarkIds.forEach(id => {
     const node = findBookmarkNodeById(allBookmarkNodes, id);
     if (node && node.url && typeof chrome !== 'undefined' && chrome.tabs) {
@@ -585,7 +591,6 @@ function bulkOpenBookmarks() {
 
 function bulkDeleteBookmarks() {
   if (selectedBookmarkIds.size === 0) return;
-
   if (confirm(`Tem certeza de que deseja excluir ${selectedBookmarkIds.size} favoritos selecionados?`)) {
     selectedBookmarkIds.forEach(id => {
       if (typeof chrome !== 'undefined' && chrome.bookmarks) {
@@ -600,7 +605,6 @@ function bulkDeleteBookmarks() {
 
 function bulkMoveBookmarks() {
   if (selectedBookmarkIds.size === 0) return;
-
   const targetFolderTitle = prompt('Digite o nome ou ID da pasta de destino:');
   if (!targetFolderTitle) return;
 
@@ -631,7 +635,6 @@ function bulkMoveBookmarks() {
 function createNewBookmarkInFolder() {
   const title = prompt('Nome do novo favorito:');
   let url = prompt('URL do novo favorito:');
-
   if (!title || !url) return;
   if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
 
@@ -642,6 +645,21 @@ function createNewBookmarkInFolder() {
       url: url
     }, () => {
       showToast('Novo favorito adicionado!');
+      loadChromeBookmarks();
+    });
+  }
+}
+
+function renameBookmarkItem(id, currentTitle, currentUrl) {
+  const newTitle = prompt('Digite o novo nome do favorito:', currentTitle);
+  if (!newTitle || !newTitle.trim()) return;
+
+  const newUrl = prompt('Digite a URL do favorito:', currentUrl);
+  if (!newUrl || !newUrl.trim()) return;
+
+  if (typeof chrome !== 'undefined' && chrome.bookmarks) {
+    chrome.bookmarks.update(id, { title: newTitle.trim(), url: newUrl.trim() }, () => {
+      showToast('Favorito atualizado!');
       loadChromeBookmarks();
     });
   }

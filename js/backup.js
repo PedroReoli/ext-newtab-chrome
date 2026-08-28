@@ -3,9 +3,9 @@
  */
 
 function initBackupModule() {
-  const exportBtn = document.getElementById('export-json-btn');
-  const importInput = document.getElementById('import-json-file');
-  const resetBtn = document.getElementById('reset-all-btn');
+  const exportBtn = document.getElementById('export-json-btn') || document.getElementById('export-json-btn-full');
+  const importInput = document.getElementById('import-json-file') || document.getElementById('import-json-file-full');
+  const resetBtn = document.getElementById('reset-all-btn') || document.getElementById('reset-all-btn-full');
 
   if (exportBtn) {
     exportBtn.addEventListener('click', exportConfiguration);
@@ -22,7 +22,7 @@ function initBackupModule() {
 
 function exportConfiguration() {
   const backupData = {
-    version: '2.5.0',
+    version: '5.0.0',
     timestamp: new Date().toISOString(),
     shortcuts: JSON.parse(localStorage.getItem('custom_newtab_shortcuts') || '[]'),
     theme: localStorage.getItem('custom_newtab_theme') || 'zinc',
@@ -36,7 +36,7 @@ function exportConfiguration() {
 
   const a = document.createElement('a');
   a.href = url;
-  a.download = `NovaGuia-Backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `ReoliTab-Backup-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
 
   URL.revokeObjectURL(url);

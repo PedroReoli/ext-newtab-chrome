@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------
- * Theme Variables, Keyframe Animations & Dark Custom Scrollbars
+ * Theme Variables, Impeccable Craft Floor Tokens & Selection
  * ------------------------------------------------------------- */
 :root {
   /* Default Zinc Dark Theme */
@@ -25,8 +25,9 @@
   --radius-lg: 20px;
   --radius-full: 9999px;
   --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 6px 18px -2px rgba(0, 0, 0, 0.35), 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 16px 40px -4px rgba(0, 0, 0, 0.5), 0 6px 12px -2px rgba(0, 0, 0, 0.3);
 }
 
 /* Theme Variant: AMOLED Pitch Black */
@@ -63,6 +64,110 @@
   --modal-bg: #0b221e;
 }
 
+/* Theme Variant: Dracula Purple */
+[data-theme="dracula"] {
+  --bg-color: #1e1f29;
+  --bg-surface: #282a36;
+  --card-bg: #343746;
+  --card-hover-bg: #44475a;
+  --card-border: rgba(189, 147, 249, 0.25);
+  --accent-color: #bd93f9;
+  --accent-hover: #ff79c6;
+  --accent-glow: rgba(189, 147, 249, 0.25);
+  --modal-bg: #282a36;
+}
+
+/* Theme Variant: Nord Frost */
+[data-theme="nord"] {
+  --bg-color: #242933;
+  --bg-surface: #2e3440;
+  --card-bg: #3b4252;
+  --card-hover-bg: #434c5e;
+  --card-border: rgba(136, 192, 208, 0.25);
+  --accent-color: #88c0d0;
+  --accent-hover: #81a1c1;
+  --accent-glow: rgba(136, 192, 208, 0.25);
+  --modal-bg: #2e3440;
+}
+
+/* Theme Variant: Tokyo Night */
+[data-theme="tokyo"] {
+  --bg-color: #16161e;
+  --bg-surface: #1a1b26;
+  --card-bg: #24283b;
+  --card-hover-bg: #2f354f;
+  --card-border: rgba(122, 162, 247, 0.25);
+  --accent-color: #7aa2f7;
+  --accent-hover: #bb9af7;
+  --accent-glow: rgba(122, 162, 247, 0.25);
+  --modal-bg: #1a1b26;
+}
+
+/* Theme Variant: Catppuccin Mocha */
+[data-theme="catppuccin"] {
+  --bg-color: #11111b;
+  --bg-surface: #1e1e2e;
+  --card-bg: #313244;
+  --card-hover-bg: #45475a;
+  --card-border: rgba(203, 166, 247, 0.25);
+  --accent-color: #cba6f7;
+  --accent-hover: #f5c2e7;
+  --accent-glow: rgba(203, 166, 247, 0.25);
+  --modal-bg: #1e1e2e;
+}
+
+/* Theme Variant: Sunset Amber */
+[data-theme="sunset"] {
+  --bg-color: #140b0b;
+  --bg-surface: #1f1212;
+  --card-bg: #2d1b1b;
+  --card-hover-bg: #3d2626;
+  --card-border: rgba(249, 115, 22, 0.25);
+  --accent-color: #f97316;
+  --accent-hover: #ea580c;
+  --accent-glow: rgba(249, 115, 22, 0.25);
+  --modal-bg: #1f1212;
+}
+
+/* Theme Variant: Rose Pine */
+[data-theme="rose"] {
+  --bg-color: #121019;
+  --bg-surface: #191724;
+  --card-bg: #21202e;
+  --card-hover-bg: #2a283e;
+  --card-border: rgba(235, 111, 146, 0.25);
+  --accent-color: #eb6f92;
+  --accent-hover: #f6c177;
+  --accent-glow: rgba(235, 111, 146, 0.25);
+  --modal-bg: #191724;
+}
+
+/* Theme Variant: Cyber Neon */
+[data-theme="cyberpunk"] {
+  --bg-color: #080312;
+  --bg-surface: #0f051d;
+  --card-bg: #1a0b30;
+  --card-hover-bg: #281248;
+  --card-border: rgba(244, 63, 94, 0.3);
+  --accent-color: #f43f5e;
+  --accent-hover: #d946ef;
+  --accent-glow: rgba(244, 63, 94, 0.3);
+  --modal-bg: #0f051d;
+}
+
+/* Theme Variant: Monokai Pro */
+[data-theme="monokai"] {
+  --bg-color: #221f22;
+  --bg-surface: #2d2a2e;
+  --card-bg: #3a363b;
+  --card-hover-bg: #49454a;
+  --card-border: rgba(255, 216, 102, 0.25);
+  --accent-color: #ffd866;
+  --accent-hover: #ff6188;
+  --accent-glow: rgba(255, 216, 102, 0.25);
+  --modal-bg: #2d2a2e;
+}
+
 /* -------------------------------------------------------------
  * Custom Sleek Dark Scrollbar
  * ------------------------------------------------------------- */
@@ -91,7 +196,6 @@
   scrollbar-color: rgba(255, 255, 255, 0.16) var(--bg-surface);
 }
 
-/* Staggered Card Entrance Animations */
 @keyframes fadeInUp {
   0% {
     opacity: 0;

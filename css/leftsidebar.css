@@ -1,0 +1,297 @@
+/* -------------------------------------------------------------
+ * Productivity & Focus Left Sidebar - Ultra Compact Craft
+ * ------------------------------------------------------------- */
+.left-productivity-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  max-height: calc(100vh - 75px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding-right: 4px;
+}
+
+/* Pomodoro Timer Styling */
+.pomodoro-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.pomodoro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pomodoro-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.pomodoro-mode-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: var(--accent-glow);
+  color: var(--accent-color);
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.pomodoro-presets-bar {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border);
+  padding: 0.2rem;
+  border-radius: var(--radius-full);
+}
+
+.pomo-preset-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.25rem 0.2rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pomo-preset-btn.active {
+  background: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.pomodoro-display {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  font-family: monospace, var(--font-family);
+  letter-spacing: 1px;
+  margin: 0.1rem 0;
+}
+
+.pomodoro-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.pomodoro-actions button {
+  flex: 1;
+}
+
+.pomodoro-custom-time-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-top: 1px solid var(--card-border);
+  padding-top: 0.45rem;
+}
+
+.pomodoro-custom-time-row input {
+  width: 42px;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.3rem;
+  color: var(--text-primary);
+  font-size: 0.74rem;
+  text-align: center;
+  outline: none;
+}
+
+/* Daily Checklist Styling */
+.checklist-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  box-shadow: var(--shadow-md);
+}
+
+.checklist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.checklist-progress-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.checklist-progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.checklist-progress-track {
+  width: 100%;
+  height: 5px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+
+.checklist-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent-color);
+  border-radius: var(--radius-full);
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.checklist-form {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.checklist-input {
+  flex: 1;
+  background: var(--input-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.6rem;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.checklist-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.checklist-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border);
+  padding: 0.35rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.checklist-item:hover {
+  border-color: var(--card-border-hover);
+  background: var(--card-hover-bg);
+}
+
+.checklist-item.completed {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.checklist-checkbox {
+  accent-color: var(--accent-color);
+  cursor: pointer;
+}
+
+.checklist-del-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.checklist-del-btn:hover {
+  color: var(--danger-color);
+}
+
+.checklist-paginator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+  border-top: 1px solid var(--card-border);
+  padding-top: 0.35rem;
+}
+
+/* Network Ping Latency Health Widget */
+.network-health-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.network-ping-val {
+  font-weight: 700;
+  color: var(--success-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Utilities Card */
+.utilities-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.utility-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.utility-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}

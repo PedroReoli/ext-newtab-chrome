@@ -1,9 +1,12 @@
 /* -------------------------------------------------------------
- * Main CSS Bundle - Modular Imports
+ * Main CSS Bundle - 3-Column Studio Workspace Modular Imports
  * ------------------------------------------------------------- */
 @import url('variables.css');
 @import url('base.css');
 @import url('shortcuts.css');
 @import url('bookmarks.css');
 @import url('automations.css');
+@import url('news.css');
+@import url('leftsidebar.css');
+@import url('integrations.css');
 @import url('modal.css');

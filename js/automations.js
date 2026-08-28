@@ -1,5 +1,5 @@
 /**
- * Automations Scheduler & Scratchpad Notes Module
+ * Automations Scheduler & Scratchpad Notes Module - Ultra-Compact Impeccable Craft
  */
 
 let activeAlarms = [];
@@ -27,36 +27,39 @@ function initScheduler() {
       createScheduledTabAlarm(url, time);
       urlInput.value = '';
       timeInput.value = '';
+      showToast(`Guia agendada para às ${time}!`);
     });
   }
 }
 
 function createScheduledTabAlarm(url, timeStr) {
+  let finalUrl = url;
+  if (!/^https?:\/\//i.test(finalUrl)) {
+    finalUrl = 'https://' + finalUrl;
+  }
+
   const [hours, minutes] = timeStr.split(':').map(Number);
   const now = new Date();
   const scheduledTime = new Date();
   scheduledTime.setHours(hours, minutes, 0, 0);
 
-  // If time already passed today, schedule for tomorrow
   if (scheduledTime <= now) {
     scheduledTime.setDate(scheduledTime.getDate() + 1);
   }
 
-  const alarmName = JSON.stringify({ url, time: timeStr, id: Date.now() });
+  const alarmName = JSON.stringify({ url: finalUrl, time: timeStr, id: Date.now() });
 
-  // Chrome Alarms API
   if (typeof chrome !== 'undefined' && chrome.alarms) {
     chrome.alarms.create(alarmName, {
       when: scheduledTime.getTime(),
-      periodInMinutes: 1440 // Daily repeat (24h)
+      periodInMinutes: 1440
     });
   }
 
-  // Save to local state
   activeAlarms.push({
     id: Date.now().toString(),
     alarmName,
-    url,
+    url: finalUrl,
     time: timeStr
   });
 
@@ -87,27 +90,37 @@ function renderAlarmsList() {
   listEl.innerHTML = '';
 
   if (activeAlarms.length === 0) {
-    listEl.innerHTML = '<div style="font-size:0.82rem; color:var(--text-muted); padding:0.5rem 0;">Nenhuma automação agendada.</div>';
+    listEl.innerHTML = '<div style="font-size:0.8rem; color:var(--text-muted); padding:0.5rem 0;">Nenhuma automação de guia agendada.</div>';
     return;
   }
 
   activeAlarms.forEach(alarm => {
     const item = document.createElement('div');
-    item.className = 'alarm-item';
+    item.className = 'alarm-item-compact';
     item.innerHTML = `
-      <div class="alarm-info">
-        <span class="alarm-time">${alarm.time}</span>
-        <span class="alarm-url">${alarm.url}</span>
+      <span class="alarm-badge-time">
+        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        ${alarm.time}
+      </span>
+      <span class="alarm-url-text" title="${alarm.url}">${alarm.url}</span>
+      <div class="alarm-item-actions">
+        <button class="alarm-test-btn test-act" title="Abrir Guia Agora">Testar</button>
+        <button class="alarm-delete-btn del-act" title="Excluir Agendamento">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
       </div>
-      <button class="action-btn delete-btn" title="Excluir Agendamento">
-        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
     `;
 
-    const deleteBtn = item.querySelector('.delete-btn');
+    const testBtn = item.querySelector('.test-act');
+    const deleteBtn = item.querySelector('.del-act');
+
+    testBtn.addEventListener('click', () => {
+      window.open(alarm.url, '_blank');
+    });
+
     deleteBtn.addEventListener('click', () => {
       deleteAlarm(alarm.id, alarm.alarmName);
     });
@@ -123,28 +136,38 @@ function deleteAlarm(id, alarmName) {
   activeAlarms = activeAlarms.filter(a => a.id !== id);
   saveActiveAlarms();
   renderAlarmsList();
+  showToast('Agendamento removido.');
 }
 
-/* -------------------------------------------------------------
+/**
  * Scratchpad Notes Module
- * ------------------------------------------------------------- */
+ */
 function initScratchpad() {
   const scratchpad = document.getElementById('scratchpad');
   const statusEl = document.getElementById('notes-status');
 
   if (!scratchpad) return;
 
-  // Load saved notes
-  scratchpad.value = localStorage.getItem('custom_newtab_notes') || '';
+  const savedText = localStorage.getItem('custom_newtab_notes') || '';
+  scratchpad.value = savedText;
+  updateCharCounter(savedText.length);
 
-  // Auto-save on typing
   scratchpad.addEventListener('input', () => {
-    localStorage.setItem('custom_newtab_notes', scratchpad.value);
+    const val = scratchpad.value;
+    localStorage.setItem('custom_newtab_notes', val);
+    updateCharCounter(val.length);
     if (statusEl) {
       statusEl.textContent = 'Salvando...';
       setTimeout(() => {
         statusEl.textContent = 'Salvo automaticamente';
-      }, 500);
+      }, 400);
     }
   });
+}
+
+function updateCharCounter(length) {
+  const counterEl = document.getElementById('notes-char-counter');
+  if (counterEl) {
+    counterEl.textContent = `${length} caracteres`;
+  }
 }

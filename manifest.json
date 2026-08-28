@@ -1,12 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "Nova Guia Personalizada Pro",
-  "version": "2.5.0",
-  "description": "Nova Guia minimalista com Dark Mode, atalhos ilimitados, navegação em árvore de favoritos e agendador de automações.",
+  "name": "ReoliTab",
+  "version": "48.0.0",
+  "description": "Sistema de Nova Guia ReoliTab com Painel Produtivo, Timer Pomodoro, Favoritos e Central de Notícias.",
   "permissions": [
     "bookmarks",
     "storage",
-    "alarms"
+    "alarms",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "*://127.0.0.1/*",
+    "*://localhost/*"
   ],
   "background": {
     "service_worker": "background.js"

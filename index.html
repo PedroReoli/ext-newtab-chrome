@@ -3,202 +3,294 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova Guia Pro</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>Nova Guia</title>
+  
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/shortcuts.css">
+  <link rel="stylesheet" href="css/bookmarks.css">
+  <link rel="stylesheet" href="css/automations.css">
+  <link rel="stylesheet" href="css/leftsidebar.css">
+  <link rel="stylesheet" href="css/news.css">
+  <link rel="stylesheet" href="css/integrations.css">
+  <link rel="stylesheet" href="css/modal.css">
 </head>
 <body>
-  <div class="background-glow"></div>
 
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container"></div>
-
-  <main class="app-container">
-    <!-- Balanced 3-Column Header Layout -->
-    <header class="header-bar">
-      <!-- Left: Clock, Date & Greeting -->
-      <div class="header-left">
-        <div id="clock" class="clock">00:00</div>
-        <div class="date-greeting">
-          <span id="date">Carregando...</span>
-          <span>•</span>
-          <span id="greeting" class="greeting-text">Boa noite</span>
-        </div>
-      </div>
-
-      <!-- Center: Top Navigation Bar -->
-      <div class="header-center">
-        <nav class="top-navbar">
-          <div class="nav-tabs">
-            <button class="nav-tab active" data-target="shortcuts-view">
-              <svg class="nav-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-              </svg>
-              Atalhos
-            </button>
-
-            <button class="nav-tab" data-target="bookmarks-view">
-              <svg class="nav-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-              </svg>
-              Favoritos
-            </button>
-
-            <button class="nav-tab" data-target="automations-view">
-              <svg class="nav-tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              Automações
-            </button>
-          </div>
-
-          <div class="nav-actions">
-            <button id="open-settings-btn" class="icon-btn" title="Configurações">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-            </button>
-          </div>
-        </nav>
-      </div>
-
-      <!-- Right: Google Logo -->
-      <div class="header-right">
-        <div class="google-logo">
-          <span class="logo-blue">G</span><span class="logo-red">o</span><span class="logo-yellow">o</span><span class="logo-blue">g</span><span class="logo-green">l</span><span class="logo-red">e</span>
-        </div>
-      </div>
-    </header>
-
-    <!-- Clean Search Section -->
-    <section class="search-section">
-      <form id="search-form" class="search-box" action="https://www.google.com/search" method="GET">
-        <select id="engine-selector" class="engine-selector" title="Selecionar Motor de Busca">
-          <option value="google">Google</option>
-          <option value="duckduckgo">DuckDuckGo</option>
-          <option value="bing">Bing</option>
-          <option value="youtube">YouTube</option>
-          <option value="github">GitHub</option>
-          <option value="chatgpt">ChatGPT</option>
-          <option value="perplexity">Perplexity</option>
-        </select>
-        <input type="text" id="search-input" name="q" placeholder="Pesquisar no Google ou digitar URL..." autofocus autocomplete="off">
-      </form>
-    </section>
-
-    <!-- View 1: Shortcuts Grid View -->
-    <div id="shortcuts-view" class="view-panel active">
-      <div class="shortcuts-container">
-        <!-- Tag Filter Pills Bar -->
-        <div id="tag-filters-bar" class="tag-filters-bar">
-          <!-- Tag pills dynamically rendered by shortcuts.js -->
-        </div>
-
-        <!-- Shortcuts Grid -->
-        <div id="shortcuts-grid" class="shortcuts-grid">
-          <!-- Shortcut Cards rendered dynamically -->
-        </div>
-      </div>
+  <!-- Top Glassmorphism Navigation Bar with Live Digital Clock & Service Ring Bell Hub -->
+  <header class="top-nav-bar">
+    <div class="nav-brand">
+      <div class="brand-logo-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+      <span class="brand-title">ReoliTab</span>
+      <span class="brand-version-pill">v48.0</span>
     </div>
 
-    <!-- View 2: Bookmarks View with View Switcher (Explorer vs Ribbon) -->
-    <div id="bookmarks-view" class="view-panel">
-      <!-- Bookmarks View Control Header -->
-      <div class="bookmarks-mode-bar">
-        <div class="mode-switcher-group">
-          <button id="mode-explorer-btn" class="mode-btn active" title="Modo Explorer (2 Colunas)">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:3px;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            Explorer
-          </button>
-          <button id="mode-ribbon-btn" class="mode-btn" title="Modo Barra Horizontal (Navegador)">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:3px;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-            Barra de Favoritos
-          </button>
-        </div>
+    <!-- Live Digital Clock Inline with Dynamic Greeting (Boa noite / Bom dia / Boa tarde) -->
+    <div id="top-digital-clock" style="display:flex; align-items:center; gap:0.55rem; font-size:0.83rem; font-weight:700; color:var(--text-primary); background:var(--bg-surface); padding:0.35rem 0.85rem; border-radius:var(--radius-full); border:1px solid var(--card-border); box-shadow:var(--shadow-sm);">
+      <span id="clock-greeting-badge" style="display:inline-flex; align-items:center; gap:0.35rem; color:var(--accent-color); font-weight:700; background:var(--accent-glow); padding:2px 8px; border-radius:var(--radius-full); font-size:0.75rem;">
+        <svg id="clock-greeting-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        <span id="clock-greeting-text">Boa noite</span>
+      </span>
+      <span id="clock-time-text" style="font-size:0.88rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.02em;">23:44</span>
+      <span id="clock-date-text" style="font-size:0.75rem; color:var(--text-muted); font-weight:500;">qui, 27 de ago.</span>
+    </div>
 
-        <div style="display:flex; align-items:center; gap:0.5rem;">
-          <span id="save-indicator" class="save-indicator">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Alterações Salvas
-          </span>
-        </div>
-      </div>
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-target="shortcuts-view">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Atalhos</span>
+      </button>
+      <button class="nav-tab" data-target="bookmarks-view">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+        <span>Favoritos</span>
+      </button>
+      <button class="nav-tab" data-target="automations-view">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Automações</span>
+      </button>
+      <button class="nav-tab" data-target="news-view">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path></svg>
+        <span>Notícias & Trends</span>
+      </button>
+      <button class="nav-tab" data-target="settings-view">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Configurações</span>
+      </button>
 
-      <!-- Mode 1: Horizontal Bookmark Ribbon (Style Browser Bar) -->
-      <div id="bookmarks-ribbon-container" class="bookmarks-ribbon-container hidden">
-        <div id="bookmark-ribbon-list" class="ribbon-list">
-          <!-- Rendered dynamically by bookmarks.js -->
-        </div>
-      </div>
+      <!-- Ring Bell Notification & Service Auth Hub Button -->
+      <div class="ring-bell-container">
+        <button id="ring-bell-btn" class="ring-bell-btn" title="Central de Alertas & Sessões">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          <span id="bell-badge-dot" class="bell-badge-dot" style="display:none;"></span>
+        </button>
 
-      <!-- Mode 2: Dual-Panel Bookmarks Explorer View -->
-      <div id="bookmarks-explorer-container" class="bookmarks-explorer">
-        <!-- Left Sidebar: Folder Directory -->
-        <aside id="bookmarks-sidebar" class="bookmarks-sidebar">
-          <div class="sidebar-header-row">
-            <span class="sidebar-title">Pastas</span>
-            <button id="collapse-all-folders-btn" class="btn-text-xs" title="Recolher Todas as Pastas">
-              Recolher Tudo
-            </button>
+        <div id="bell-auth-popover" class="bell-auth-popover">
+          <div class="popover-header">
+            <span>Status das Sessões & Permissões</span>
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
           </div>
-          <div id="folder-tree-list" class="folder-list">
-            <!-- Folders rendered by bookmarks.js -->
+          <div id="popover-ytmusic-row" class="popover-service-row">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span id="status-dot-ytmusic" class="status-dot online"></span>
+              <span style="font-weight:600;">YouTube Music</span>
+            </div>
+            <span id="status-msg-ytmusic" style="color:var(--text-muted);">Disponível</span>
+          </div>
+          <div id="popover-antigravity-row" class="popover-service-row">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span id="status-dot-antigravity" class="status-dot online"></span>
+              <span style="font-weight:600;">Antigravity Studio</span>
+            </div>
+            <span id="status-msg-antigravity" style="color:var(--success-color);">Porta 63060</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Global Workspace Container -->
+  <main class="app-workspace">
+
+    <!-- View 1: Main Workspace - 3 Column Architecture -->
+    <div id="shortcuts-view" class="view-panel active">
+      <div class="studio-3column-layout">
+        
+        <!-- 1. LEFT SIDEBAR: Productivity & Focus Tools -->
+        <aside class="left-productivity-sidebar">
+          <div class="pomodoro-card">
+            <div class="pomodoro-header">
+              <div class="pomodoro-title"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>Timer Pomodoro</span></div>
+              <span id="pomodoro-mode-badge" class="pomodoro-mode-badge">Foco</span>
+            </div>
+            <div class="pomodoro-presets-bar">
+              <button class="pomo-preset-btn active" data-focus="25" data-break="5">25/5</button>
+              <button class="pomo-preset-btn" data-focus="50" data-break="10">50/10</button>
+              <button class="pomo-preset-btn" data-focus="90" data-break="15">90/15</button>
+            </div>
+            <div id="pomodoro-display" class="pomodoro-display">25:00</div>
+            <div class="pomodoro-actions">
+              <button id="pomodoro-start-btn" class="btn btn-primary btn-sm">Iniciar</button>
+              <button id="pomodoro-reset-btn" class="btn btn-secondary btn-sm">Reset</button>
+            </div>
+            <div class="pomodoro-custom-time-row">
+              <input type="number" id="pomo-custom-focus" value="25" min="1" max="180" title="Minutos de Foco">
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">m Foco /</span>
+              <input type="number" id="pomo-custom-break" value="5" min="1" max="60" title="Minutos de Pausa">
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">m Pausa</span>
+            </div>
+          </div>
+
+          <div class="checklist-card">
+            <div class="checklist-header">
+              <span>Checklist de Hoje</span>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="checklist-progress-wrapper">
+              <div class="checklist-progress-info"><span>Progresso das Tarefas:</span><span id="checklist-progress-text">0%</span></div>
+              <div class="checklist-progress-track"><div id="checklist-progress-fill" class="checklist-progress-fill"></div></div>
+            </div>
+            <form id="checklist-form" class="checklist-form">
+              <input type="text" id="checklist-input" class="checklist-input" placeholder="Nova tarefa do dia..." required>
+              <button type="submit" class="btn btn-primary btn-sm" title="Adicionar Tarefa"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
+            </form>
+            <div id="checklist-items-list" class="checklist-items-list"></div>
+            <div id="checklist-paginator" class="checklist-paginator" style="display:none;"></div>
+          </div>
+
+          <div class="network-health-card">
+            <span>Rede & Latência:</span>
+            <span id="network-ping-val" class="network-ping-val"><span class="status-dot online"></span> 18ms • Estável</span>
+          </div>
+
+          <div class="utilities-card">
+            <div class="utility-row"><span>Abas Abertas no Chrome:</span><span id="util-tabs-count" class="utility-val">...</span></div>
+            <div class="utility-row"><span>Total de Atalhos:</span><span id="util-shortcuts-count" class="utility-val">...</span></div>
           </div>
         </aside>
 
-        <!-- Right Main Panel: Toolbar & Bookmarks Grid -->
+        <!-- 2. CENTER COLUMN: Main Shortcuts Content -->
+        <div class="shortcuts-container">
+          <div id="tag-filters-bar" class="tag-filters-bar"></div>
+          <div id="shortcuts-grid" class="shortcuts-grid"></div>
+        </div>
+
+        <!-- 3. RIGHT SIDEBAR: Painel de Dados & Métricas ao Vivo -->
+        <aside id="widgets-sidebar" class="widgets-sidebar">
+          
+          <!-- Weather & Live Currency Data -->
+          <div class="widget-item-card widget-dev">
+            <div class="weather-card-body">
+              <div class="weather-temp-badge">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="color:#f59e0b;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
+                <span id="weather-temp-val">24°C</span>
+              </div>
+              <span id="weather-desc-text" class="weather-desc-text">Detectando...</span>
+            </div>
+            <div class="currency-ticker-options">
+              <div class="currency-ticker-item"><span class="currency-symbol-lbl">USD</span><span id="rate-usd-val" class="currency-rate-val">R$ 5.42</span></div>
+              <div class="currency-ticker-item"><span class="currency-symbol-lbl">EUR</span><span id="rate-eur-val" class="currency-rate-val">R$ 5.91</span></div>
+              <div class="currency-ticker-item"><span class="currency-symbol-lbl">BTC</span><span id="rate-btc-val" class="currency-rate-val">$64.2k</span></div>
+            </div>
+          </div>
+
+          <!-- Métricas das Notícias API & Leitura do Usuário -->
+          <div class="widget-item-card widget-dev">
+            <div class="widget-card-header">
+              <div class="widget-badge-title" style="color:var(--accent-color);">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path></svg>
+                <span>Métricas de Notícias & Leitura</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:0.4rem; background:var(--bg-surface); padding:0.6rem 0.75rem; border-radius:var(--radius-sm); border:1px solid var(--card-border);">
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem;">
+                <span style="color:var(--text-secondary);">Notícias Captadas (API):</span>
+                <span id="metrics-news-total" style="font-weight:700; color:var(--accent-color);">30 itens</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem;">
+                <span style="color:var(--text-secondary);">Notícias Lidas / Clicadas:</span>
+                <span id="metrics-news-read" style="font-weight:700; color:var(--success-color);">0 lidas</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Métricas de Produtividade do Usuário -->
+          <div class="widget-item-card widget-dev">
+            <div class="widget-card-header">
+              <div class="widget-badge-title" style="color:#10b981;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <span>Métricas de Desempenho</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:0.4rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; background:var(--bg-surface); padding:0.4rem 0.65rem; border-radius:var(--radius-sm); border:1px solid var(--card-border);">
+                <span style="color:var(--text-secondary);">Pomodoros Concluídos Hoje:</span>
+                <span id="metrics-pomo-count" style="font-weight:700; color:var(--accent-color);">0 ciclos</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; background:var(--bg-surface); padding:0.4rem 0.65rem; border-radius:var(--radius-sm); border:1px solid var(--card-border);">
+                <span style="color:var(--text-secondary);">Conclusão do Checklist:</span>
+                <span id="metrics-checklist-percent" style="font-weight:700; color:var(--success-color);">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status do Servidor Antigravity Studio -->
+          <div class="widget-item-card widget-dev">
+            <div class="antigravity-badge">
+              <div style="display:flex; align-items:center; gap:0.4rem;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 17 22 12"></polyline></svg>
+                <span>Antigravity Studio</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span id="antigravity-status-dot" class="status-dot online"></span>
+                <span id="antigravity-status-text" style="font-size:0.75rem; color:var(--text-muted);">ONLINE</span>
+              </div>
+            </div>
+            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">Servidor local na porta <code style="color:var(--accent-color);">https://127.0.0.1:63060/</code>.</p>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+
+    <!-- View 2: Bookmarks View with Dynamic View Switcher (Explorer vs Ribbon) -->
+    <div id="bookmarks-view" class="view-panel mode-explorer">
+      <div class="bookmarks-mode-bar">
+        <div class="bookmarks-mode-top-row">
+          <div class="mode-switcher-group">
+            <button id="mode-explorer-btn" class="mode-btn active" title="Modo Explorer (2 Colunas)">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              Explorer (Árvore + Cards)
+            </button>
+            <button id="mode-ribbon-btn" class="mode-btn" title="Modo Barra Horizontal">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+              Barra de Favoritos (Ribbon)
+            </button>
+          </div>
+          <span id="save-indicator" class="save-indicator"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Alterações Salvas</span>
+        </div>
+
+        <div class="bookmarks-smart-filters-row">
+          <select id="filter-root-folder-select" class="filter-select"><option value="all">Todas as Pastas Mãe</option></select>
+          <select id="filter-hierarchy-depth-select" class="filter-select">
+            <option value="all">Todas as Hierarquias</option>
+            <option value="1">Apenas Nível 1 (Pastas Mãe / Raiz)</option>
+            <option value="2">Apenas Nível 2 (Subpastas)</option>
+            <option value="3">Nível 3 ou mais profundo</option>
+          </select>
+          <label class="filter-checkbox-label"><input type="checkbox" id="filter-hide-empty-folders"><span>Ocultar Pastas Vazias</span></label>
+        </div>
+      </div>
+
+      <div id="bookmarks-ribbon-container" class="bookmarks-ribbon-container">
+        <div id="bookmark-ribbon-list" class="ribbon-list"></div>
+      </div>
+
+      <div id="bookmarks-explorer-container" class="bookmarks-explorer">
+        <aside id="bookmarks-sidebar" class="bookmarks-sidebar">
+          <div class="sidebar-header-row">
+            <span class="sidebar-title">Pastas</span>
+            <button id="collapse-all-folders-btn" class="btn btn-secondary btn-sm" title="Recolher Subpastas da Árvore"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6"></path><path d="M20 10h-6V4"></path><path d="M14 10l7-7"></path><path d="M3 21l7-7"></path></svg>Recolher Pastas</button>
+          </div>
+          <div id="folder-tree-list" class="folder-list"></div>
+        </aside>
+
         <main class="bookmarks-main-panel">
           <div class="bookmarks-top-bar">
-            <div id="breadcrumbs" class="breadcrumbs">
-              <span>Favoritos</span>
-            </div>
-
-            <div class="bookmarks-search-box">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input type="text" id="bookmarks-search-input" placeholder="Filtrar nesta pasta...">
-            </div>
+            <div id="breadcrumbs" class="breadcrumbs"><span>Favoritos</span></div>
+            <div class="bookmarks-search-box"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><input type="text" id="bookmarks-search-input" placeholder="Filtrar nesta pasta..."></div>
           </div>
 
-          <!-- Bulk Actions Toolbar -->
           <div class="bulk-toolbar">
-            <label class="select-all-wrapper">
-              <input type="checkbox" id="select-all-bookmarks">
-              <span>Selecionar Todos</span>
-            </label>
-
+            <label class="select-all-wrapper"><input type="checkbox" id="select-all-bookmarks"><span>Selecionar Todos</span></label>
             <div class="bulk-btn-group">
-              <button id="bulk-open-btn" class="bulk-btn" disabled title="Abrir Selecionados em Abas">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                Abrir Abas (<span id="bulk-count">0</span>)
-              </button>
-              <button id="bulk-move-btn" class="bulk-btn" disabled title="Mover Selecionados">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                Mover
-              </button>
-              <button id="bulk-delete-btn" class="bulk-btn danger" disabled title="Excluir Selecionados">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                Excluir
-              </button>
-              <button id="new-bookmark-btn" class="bulk-btn" style="margin-left: 0.5rem; background: var(--accent-color); color: #fff; border:none;">
-                + Novo Favorito
-              </button>
+              <button id="bulk-open-btn" class="bulk-btn" disabled>Abrir Abas (<span id="bulk-count">0</span>)</button>
+              <button id="bulk-move-btn" class="bulk-btn" disabled>Mover</button>
+              <button id="bulk-delete-btn" class="bulk-btn danger" disabled>Excluir</button>
+              <button id="new-bookmark-btn" class="btn btn-primary btn-sm" style="margin-left:0.5rem;">Novo Favorito</button>
             </div>
           </div>
 
-          <!-- Bookmark Items Content Grid -->
-          <div id="bookmarks-content-grid" class="bookmarks-content-grid">
-            <!-- Bookmark Cards rendered dynamically -->
-          </div>
+          <div id="bookmarks-content-grid" class="bookmarks-content-grid"></div>
         </main>
       </div>
     </div>
@@ -206,159 +298,222 @@
     <!-- View 3: Automations & Scratchpad View -->
     <div id="automations-view" class="view-panel">
       <div class="automations-container">
-        <!-- Scheduled Alarms Card -->
         <div class="panel-card">
-          <div class="panel-card-title">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            Agendador de Guias
-          </div>
-          
-          <form id="automation-form" style="display:flex; flex-direction:column; gap:0.6rem;">
-            <input type="url" id="auto-url" placeholder="https://plataforma.felipecabrera.dev/app" required style="padding:0.6rem; background:var(--bg-surface); border:1px solid var(--card-border); color:var(--text-primary); border-radius:6px;">
-            <div style="display:flex; gap:0.5rem;">
-              <input type="time" id="auto-time" required style="padding:0.6rem; background:var(--bg-surface); border:1px solid var(--card-border); color:var(--text-primary); border-radius:6px; flex:1;">
-              <button type="submit" class="btn btn-primary" style="padding:0.6rem 1rem;">Agendar</button>
-            </div>
+          <div class="panel-card-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>Agendador de Guias do Chrome</div>
+          <form id="automation-form" class="automation-single-line-form">
+            <input type="text" id="auto-url" class="automation-url-input" placeholder="Endereço da guia (ex: github.com)..." required>
+            <input type="time" id="auto-time" class="automation-time-input" required>
+            <button type="submit" class="btn btn-primary btn-sm" title="Agendar Guia"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
           </form>
-
-          <div id="alarms-list" class="alarms-list">
-            <!-- Active Alarms -->
-          </div>
+          <div id="alarms-list" class="alarms-list"></div>
         </div>
 
-        <!-- Scratchpad Quick Notes Card -->
         <div class="panel-card">
-          <div class="panel-card-title">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
-            Bloco de Notas Rápido
-          </div>
-          <textarea id="scratchpad" class="scratchpad-textarea" placeholder="Digite anotações rápidas ou lembretes aqui... Salvo automaticamente."></textarea>
-          <div id="notes-status" class="notes-status">Salvo automaticamente</div>
+          <div class="panel-card-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>Bloco de Notas Rápido</div>
+          <textarea id="scratchpad" class="scratchpad-textarea" placeholder="Anotações rápidas ou rascunho de código... Salvo em tempo real."></textarea>
+          <div class="notes-footer-row"><span id="notes-char-counter">0 caracteres</span><span id="notes-status">Salvo automaticamente</span></div>
         </div>
       </div>
     </div>
+
+    <!-- View 4: NEWS & TRENDING HUB PANEL -->
+    <div id="news-view" class="view-panel">
+      <div class="news-container">
+        <div class="news-control-header">
+          <div class="news-header-top-row">
+            <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary);">Central de Notícias por Nicho</div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <button id="news-translate-btn" class="news-translate-btn" title="Traduzir Notícias para Português"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10z"></path></svg><span>Traduzir PT-BR</span></button>
+              <div class="news-search-box"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><input type="text" id="news-search-input" placeholder="Pesquisar nas notícias..."></div>
+            </div>
+          </div>
+
+          <div id="niche-pills-bar" class="niche-pills-bar">
+            <button class="niche-pill active" data-niche="tech">Tech & Inovação</button>
+            <button class="niche-pill" data-niche="ai">Inteligência Artificial</button>
+            <button class="niche-pill" data-niche="dev">Dev.to Articles</button>
+            <button class="niche-pill" data-niche="hackernews">Hacker News</button>
+            <button class="niche-pill" data-niche="github">GitHub Trends</button>
+            <button id="add-custom-niche-btn" class="btn btn-secondary btn-sm" style="margin-left:0.4rem;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Criar Nicho</button>
+          </div>
+        </div>
+
+        <div id="news-grid" class="news-grid"></div>
+      </div>
+    </div>
+
+    <!-- View 5: FULL SETTINGS STUDIO -->
+    <div id="settings-view" class="view-panel">
+      <div class="settings-full-container">
+        
+        <div class="settings-subnav">
+          <button class="settings-nav-btn active" data-settings-tab="settings-themes-tab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>Aparência & Temas</button>
+          <button class="settings-nav-btn" data-settings-tab="settings-tags-tab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gerenciador de Tags</button>
+          <button class="settings-nav-btn" data-settings-tab="settings-backup-tab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Backup & Restauração</button>
+        </div>
+
+        <div id="settings-themes-tab" class="settings-panel-section active">
+          <div class="panel-card" style="padding: 1rem 1.15rem;">
+            <div class="panel-card-title" style="font-size:0.88rem; margin-bottom:0.6rem;">Temas de Cores Instantâneos (12 Opções)</div>
+            
+            <div class="compact-theme-grid">
+              <div class="theme-card active" data-theme="zinc"><div class="theme-swatch" style="background:#18181b; border:1px solid #3b82f6;"></div>Zinc Dark</div>
+              <div class="theme-card" data-theme="amoled"><div class="theme-swatch" style="background:#000000; border:1px solid #666;"></div>AMOLED Black</div>
+              <div class="theme-card" data-theme="midnight"><div class="theme-swatch" style="background:#0b0f19; border:1px solid #6366f1;"></div>Midnight Blue</div>
+              <div class="theme-card" data-theme="emerald"><div class="theme-swatch" style="background:#061412; border:1px solid #10b981;"></div>Cyber Emerald</div>
+              <div class="theme-card" data-theme="dracula"><div class="theme-swatch" style="background:#282a36; border:1px solid #bd93f9;"></div>Dracula Purple</div>
+              <div class="theme-card" data-theme="nord"><div class="theme-swatch" style="background:#2e3440; border:1px solid #88c0d0;"></div>Nord Frost</div>
+              <div class="theme-card" data-theme="tokyo"><div class="theme-swatch" style="background:#1a1b26; border:1px solid #7aa2f7;"></div>Tokyo Night</div>
+              <div class="theme-card" data-theme="catppuccin"><div class="theme-swatch" style="background:#1e1e2e; border:1px solid #cba6f7;"></div>Catppuccin</div>
+              <div class="theme-card" data-theme="sunset"><div class="theme-swatch" style="background:#1f1212; border:1px solid #f97316;"></div>Sunset Amber</div>
+              <div class="theme-card" data-theme="rose"><div class="theme-swatch" style="background:#191724; border:1px solid #eb6f92;"></div>Rose Pine</div>
+              <div class="theme-card" data-theme="cyberpunk"><div class="theme-swatch" style="background:#0f051d; border:1px solid #f43f5e;"></div>Cyber Neon</div>
+              <div class="theme-card" data-theme="monokai"><div class="theme-swatch" style="background:#2d2a2e; border:1px solid #ffd866;"></div>Monokai Pro</div>
+            </div>
+
+            <div style="margin-top:1.15rem; border-top:1px solid var(--card-border); padding-top:0.9rem;">
+              <div class="panel-card-title" style="font-size:0.88rem; margin-bottom:0.6rem;">Plano de Fundo (Wallpapers HD & GIFs Animados)</div>
+
+              <div class="compact-theme-grid">
+                <div class="theme-card wallpaper-card active" data-wallpaper-preset="none"><div class="theme-swatch" style="background:var(--accent-glow);"></div>Glow Padrão</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="cyberpunk"><div class="theme-swatch" style="background:#f43f5e;"></div>Cyberpunk</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="nebula"><div class="theme-swatch" style="background:#8b5cf6;"></div>Nebula</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="architecture"><div class="theme-swatch" style="background:#38bdf8;"></div>Architecture</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="nature"><div class="theme-swatch" style="background:#10b981;"></div>Dark Forest</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="matrix"><div class="theme-swatch" style="background:#22c55e;"></div>Matrix Rain</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="synthwave"><div class="theme-swatch" style="background:#ec4899;"></div>Synthwave</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="minimal"><div class="theme-swatch" style="background:#64748b;"></div>Minimal Waves</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="cyber-gif"><div class="theme-swatch" style="background:#e11d48;"></div>Cyber GIF</div>
+                <div class="theme-card wallpaper-card" data-wallpaper-preset="synthwave-gif"><div class="theme-swatch" style="background:#f43f5e;"></div>Retro GIF</div>
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem; margin-top:0.85rem;">
+                <div class="form-group" style="margin:0;">
+                  <label for="wallpaper-custom-url" style="font-size:0.75rem;">Ou Imagem/GIF por URL</label>
+                  <div style="display:flex; gap:0.4rem;">
+                    <input type="url" id="wallpaper-custom-url" placeholder="https://exemplo.com/fundo.gif" style="flex:1; padding:0.35rem 0.55rem; font-size:0.76rem;">
+                    <button id="apply-wallpaper-url-btn" class="btn btn-primary btn-sm">Aplicar</button>
+                  </div>
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label style="font-size:0.75rem;">Ou Arquivo do Computador (Foto / GIF)</label>
+                  <label class="custom-file-upload-label" style="padding:0.35rem 0.6rem; font-size:0.76rem; width:100%; justify-content:center;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>Upload Foto/GIF...</span>
+                    <input type="file" id="wallpaper-custom-file" accept="image/*,.gif" class="hidden-file-input">
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="settings-tags-tab" class="settings-panel-section">
+          <div class="panel-card">
+            <div class="panel-card-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gerenciador de Tags & Categorias</div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.75rem;">Crie tags personalizadas ou clique nas sugestões para organizar os atalhos da tela inicial.</p>
+
+            <form id="create-tag-form" class="create-tag-inline-form">
+              <input type="text" id="new-tag-name-input" placeholder="Digite o nome da nova tag (ex: Projeto X, Estudos)..." required autocomplete="off">
+              <button type="submit" class="btn btn-primary btn-sm"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Criar Tag</button>
+            </form>
+
+            <div class="tag-section-wrapper" style="margin-top:1.25rem;">
+              <div class="tag-section-label"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><span>Sugestões Populares (Clique para Adicionar)</span></div>
+              <div id="suggested-tags-grid" class="suggested-tags-grid">
+                <button class="tag-suggestion-pill" data-suggest-tag="Produtividade">Produtividade</button>
+                <button class="tag-suggestion-pill" data-suggest-tag="IA & Prompts">IA & Prompts</button>
+                <button class="tag-suggestion-pill" data-suggest-tag="ReoliOS">ReoliOS</button>
+                <button class="tag-suggestion-pill" data-suggest-tag="Startups">Startups</button>
+                <button class="tag-suggestion-pill" data-suggest-tag="Dev & Código">Dev & Código</button>
+                <button class="tag-suggestion-pill" data-suggest-tag="Finanças">Finanças</button>
+                <button class="tag-suggestion-pill" data-suggest-tag="Estudos">Estudos</button>
+                <button class="tag-suggestion-pill" data-suggest-tag="Automação">Automação</button>
+              </div>
+            </div>
+
+            <div class="tag-section-wrapper" style="margin-top:1.25rem;">
+              <div class="tag-section-label"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span>Tags Ativas em Uso</span></div>
+              <div id="active-tags-grid" class="active-tags-grid"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="settings-backup-tab" class="settings-panel-section">
+          <div class="panel-card">
+            <div class="panel-card-title">Backup & Restauração de Dados</div>
+            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">Exporte todas as suas configurações, atalhos e tags em um arquivo JSON de backup ou restaure dados salvos anteriormente.</p>
+
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+              <button id="export-backup-btn" class="btn btn-primary"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Exportar Backup JSON</button>
+              <label class="btn btn-secondary custom-file-upload-btn" style="margin:0;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Importar Backup JSON<input type="file" id="import-backup-file" accept=".json" class="hidden-file-input"></label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
-  <!-- Expanded & Compact Multi-Tabbed Settings Modal -->
-  <div id="settings-modal" class="modal-backdrop hidden">
-    <div class="modal">
+  <!-- Interactive Shortcut Creation & Edit Modal -->
+  <div id="shortcut-modal" class="modal-backdrop">
+    <div class="modal-card animate-entrance">
       <div class="modal-header">
-        <h3 id="modal-header-title">Configurações Gerais</h3>
-        <button id="close-settings-btn" class="icon-btn">&times;</button>
+        <span id="shortcut-modal-title" class="modal-title">Studio de Criação de Atalhos</span>
+        <button id="close-shortcut-modal-btn" class="modal-close-btn">&times;</button>
       </div>
+      
+      <form id="shortcut-modal-form" class="modal-form-body">
+        <input type="hidden" id="shortcut-modal-id">
 
-      <div class="modal-nav-tabs">
-        <button class="modal-tab-btn active" data-tab="tab-shortcut">Atalho</button>
-        <button class="modal-tab-btn" data-tab="tab-appearance">Aparência & Temas</button>
-        <button class="modal-tab-btn" data-tab="tab-backup">Dados & Backup</button>
-      </div>
-
-      <div class="modal-body">
-        <!-- Tab 1: Shortcut Edit / Create (2-Column Grid Layout) -->
-        <div id="tab-shortcut" class="modal-tab-content active">
-          <form id="shortcut-form">
-            <input type="hidden" id="shortcut-id">
-
-            <div class="form-row-grid">
-              <div class="form-group">
-                <label for="shortcut-name">Nome do Atalho</label>
-                <input type="text" id="shortcut-name" placeholder="Ex: GitHub, YouTube, Resume.AI" required>
-              </div>
-              <div class="form-group">
-                <label for="shortcut-url">URL / Endereço Web</label>
-                <input type="url" id="shortcut-url" placeholder="https://github.com" required>
-              </div>
-            </div>
-
-            <div class="form-row-grid">
-              <div class="form-group">
-                <label for="shortcut-tags">Tags (separadas por vírgula)</label>
-                <input type="text" id="shortcut-tags" placeholder="Ex: Dev, IA, Mídia, Estudo">
-              </div>
-              <div class="form-group">
-                <label for="shortcut-custom-icon-url">Ícone (URL da Imagem)</label>
-                <input type="url" id="shortcut-custom-icon-url" placeholder="https://exemplo.com/logo.png">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="shortcut-custom-icon-file">Ou Carregar Imagem Local</label>
-              <input type="file" id="shortcut-custom-icon-file" accept="image/*" style="font-size:0.82rem; color:var(--text-secondary); padding:0.4rem 0.6rem;">
-              <div id="icon-preview-wrapper" style="display:none; align-items:center; gap:0.5rem; margin-top:0.3rem;">
-                <span style="font-size:0.75rem; color:var(--text-muted);">Preview:</span>
-                <img id="icon-preview-img" src="" style="width:26px; height:26px; object-fit:contain; border-radius:4px;">
-                <button type="button" id="clear-custom-icon" class="btn-text" style="color:var(--danger-color); font-size:0.75rem;">Remover Ícone</button>
-              </div>
-            </div>
-
-            <div class="modal-footer" style="padding: 0.75rem 0 0 0; border:none;">
-              <button type="button" id="cancel-shortcut-btn" class="btn btn-secondary">Cancelar</button>
-              <button type="submit" class="btn btn-primary">Salvar Atalho</button>
-            </div>
-          </form>
+        <div class="form-group">
+          <label for="shortcut-modal-name">Nome do Atalho</label>
+          <input type="text" id="shortcut-modal-name" placeholder="Ex: GitHub, ChatGPT, ReoliOS" required>
         </div>
 
-        <!-- Tab 2: Appearance & Themes -->
-        <div id="tab-appearance" class="modal-tab-content">
-          <div class="form-group">
-            <label>Selecione o Tema Visual</label>
-            <div class="theme-options-grid">
-              <div class="theme-card active" data-theme="zinc">
-                <div class="theme-swatch" style="background:#18181b;"></div>
-                Zinc Dark
-              </div>
-              <div class="theme-card" data-theme="amoled">
-                <div class="theme-swatch" style="background:#000000; border:1px solid #333;"></div>
-                AMOLED Black
-              </div>
-              <div class="theme-card" data-theme="midnight">
-                <div class="theme-swatch" style="background:#0b0f19;"></div>
-                Midnight Blue
-              </div>
-              <div class="theme-card" data-theme="emerald">
-                <div class="theme-swatch" style="background:#061412;"></div>
-                Cyber Emerald
-              </div>
-            </div>
-          </div>
+        <div class="form-group">
+          <label for="shortcut-modal-url">URL de Destino</label>
+          <input type="text" id="shortcut-modal-url" placeholder="https://github.com" required>
         </div>
 
-        <!-- Tab 3: Backup & Data -->
-        <div id="tab-backup" class="modal-tab-content">
-          <div class="form-group">
-            <label>Exportar ou Importar Configurações</label>
-            <p style="font-size:0.8rem; color:var(--text-muted);">Faça backup dos seus atalhos e preferências em um arquivo .json.</p>
-            <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
-              <button id="export-json-btn" class="btn btn-secondary">Exportar JSON</button>
-              <label class="btn btn-secondary" style="cursor:pointer; display:inline-block;">
-                Importar JSON
-                <input type="file" id="import-json-file" accept=".json" style="display:none;">
-              </label>
-            </div>
-          </div>
-          <div class="form-group" style="margin-top:1rem;">
-            <label>Restaurar Padrões</label>
-            <button id="reset-all-btn" class="btn btn-danger">Restaurar Atalhos Originais</button>
-          </div>
+        <div class="form-group">
+          <label for="shortcut-modal-tags">Tags (separadas por vírgula)</label>
+          <input type="text" id="shortcut-modal-tags" placeholder="Ex: Dev, IA, Mídia, Estudos">
         </div>
-      </div>
+
+        <div class="form-group">
+          <label for="shortcut-modal-icon-url">URL do Ícone (Opcional)</label>
+          <input type="url" id="shortcut-modal-icon-url" placeholder="https://exemplo.com/logo.png">
+        </div>
+
+        <div class="form-group">
+          <label>Ou Carregar Imagem Local do Computador</label>
+          <label class="custom-file-upload-label">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span id="shortcut-modal-file-name">Escolher Imagem do Computador...</span>
+            <input type="file" id="shortcut-modal-file" accept="image/*" class="hidden-file-input">
+          </label>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1rem;">
+          <button type="button" id="cancel-shortcut-modal-btn" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Atalho</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <!-- JavaScript Modules -->
-  <script src="js/clock.js"></script>
-  <script src="js/search.js"></script>
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
   <script src="js/shortcuts.js"></script>
   <script src="js/bookmarks.js"></script>
   <script src="js/automations.js"></script>
+  <script src="js/leftsidebar.js"></script>
+  <script src="js/news.js"></script>
   <script src="js/themes.js"></script>
-  <script src="js/backup.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
