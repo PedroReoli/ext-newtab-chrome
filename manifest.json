@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ReoliTab",
-  "version": "48.0.0",
+  "version": "57.0.0",
   "description": "Sistema de Nova Guia ReoliTab com Painel Produtivo, Timer Pomodoro, Favoritos e Central de Notícias.",
   "permissions": [
     "bookmarks",
