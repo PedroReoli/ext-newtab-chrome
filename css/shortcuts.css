@@ -58,6 +58,43 @@
   border-color: var(--accent-color);
 }
 
+/* Shortcuts View Mode Switcher Group */
+.shortcuts-view-mode-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--bg-surface);
+  padding: 3px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--card-border);
+  flex-shrink: 0;
+}
+
+.shortcuts-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shortcuts-mode-btn:hover {
+  color: var(--text-primary);
+  background: var(--card-hover-bg);
+}
+
+.shortcuts-mode-btn.active {
+  background: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 2px 6px var(--accent-glow);
+}
+
 /* Tag Pills Filter Bar */
 .tag-filters-bar {
   display: flex;
@@ -104,6 +141,94 @@
   gap: 0.75rem;
   width: 100%;
   align-content: start;
+}
+
+/* MODE 2: COMPACT MINI CARDS */
+.shortcuts-grid.mode-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(75px, 92px));
+  gap: 0.5rem;
+}
+
+.shortcuts-grid.mode-compact .shortcut-card {
+  min-height: 75px;
+  max-width: 92px;
+  padding: 0.5rem 0.3rem;
+  gap: 0.35rem;
+  border-radius: var(--radius-md);
+}
+
+.shortcuts-grid.mode-compact .shortcut-icon-wrapper {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+}
+
+.shortcuts-grid.mode-compact .shortcut-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.shortcuts-grid.mode-compact .shortcut-title {
+  font-size: 0.7rem;
+}
+
+/* MODE 3: TABLE / LIST VIEW */
+.shortcuts-grid.mode-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.shortcuts-grid.mode-table .shortcut-card {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  min-height: auto;
+  max-width: 100%;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-md);
+  gap: 0.85rem;
+}
+
+.shortcuts-grid.mode-table .shortcut-main-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.shortcuts-grid.mode-table .shortcut-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.shortcuts-grid.mode-table .shortcut-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.shortcuts-grid.mode-table .shortcut-domain {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 0.5rem;
+}
+
+.shortcuts-grid.mode-table .shortcut-tag-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .shortcut-card {

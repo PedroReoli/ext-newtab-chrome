@@ -1,5 +1,5 @@
 /**
- * Shortcuts Module - Compact Grid, Interactive Popup Modal for Creation/Edit, Custom Icons & Favicons, Custom Tag Order Engine
+ * Shortcuts Module - Multi-Mode View Switcher (Grid Padrão, Grade Mini Compacta, Modo Tabela / Lista)
  */
 
 const DEFAULT_SHORTCUTS = [
@@ -17,11 +17,39 @@ const DEFAULT_SHORTCUTS = [
 let appShortcuts = [];
 let activeTagFilter = 'Todos';
 let appTagOrder = [];
+let shortcutsViewMode = localStorage.getItem('custom_newtab_shortcuts_view_mode') || 'grid';
 
 function initShortcutsModule() {
   loadShortcuts();
   loadTagOrder();
   initShortcutModal();
+  initShortcutsViewModeSwitcher();
+}
+
+function initShortcutsViewModeSwitcher() {
+  const modeBtns = document.querySelectorAll('.shortcuts-mode-btn');
+  modeBtns.forEach(btn => {
+    const mode = btn.getAttribute('data-mode');
+    if (mode === shortcutsViewMode) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+
+    btn.addEventListener('click', () => {
+      shortcutsViewMode = mode;
+      localStorage.setItem('custom_newtab_shortcuts_view_mode', mode);
+      modeBtns.forEach(b => {
+        if (b.getAttribute('data-mode') === mode) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      renderShortcutsGrid();
+      if (typeof showToast === 'function') {
+        const labels = { grid: 'Grid Padrão', compact: 'Grade Mini Compacta', table: 'Modo Lista / Tabela' };
+        showToast(`Visualização: ${labels[mode]}`);
+      }
+    });
+  });
 }
 
 function loadTagOrder() {
@@ -68,9 +96,18 @@ function getFaviconUrlHD(urlStr) {
   }
 }
 
+function getDomainFromUrl(urlStr) {
+  try {
+    const url = new URL(urlStr);
+    return url.hostname.replace(/^www\./i, '');
+  } catch (e) {
+    return urlStr;
+  }
+}
+
 // Clean Default Website Globe SVG Icon
 const DEFAULT_GLOBE_SVG = `
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-secondary);">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-secondary);">
     <circle cx="12" cy="12" r="10"></circle>
     <line x1="2" y1="12" x2="22" y2="12"></line>
     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
@@ -123,6 +160,7 @@ function renderShortcutsGrid() {
   const gridEl = document.getElementById('shortcuts-grid');
   if (!gridEl) return;
 
+  gridEl.className = `shortcuts-grid mode-${shortcutsViewMode}`;
   gridEl.innerHTML = '';
 
   const filteredShortcuts = appShortcuts.filter(s => {
@@ -152,26 +190,56 @@ function renderShortcutsGrid() {
       iconHtml = `<div class="shortcut-fallback-icon">${DEFAULT_GLOBE_SVG}</div>`;
     }
 
-    card.innerHTML = `
-      <div class="card-actions">
-        <button class="action-btn edit-btn" title="Editar Atalho">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-          </svg>
-        </button>
-        <button class="action-btn delete-btn" title="Excluir">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="shortcut-icon-wrapper">
-        ${iconHtml}
-      </div>
-      <span class="shortcut-title">${shortcut.name}</span>
-    `;
+    if (shortcutsViewMode === 'table') {
+      const tagsList = Array.isArray(shortcut.tags) ? shortcut.tags : (shortcut.tags ? [shortcut.tags] : []);
+      const tagsBadgeHtml = tagsList.map(t => `<span class="shortcut-tag-badge">${t}</span>`).join('');
+
+      card.innerHTML = `
+        <div class="shortcut-main-info">
+          <div class="shortcut-icon-wrapper">${iconHtml}</div>
+          <span class="shortcut-title" style="font-weight:600;">${shortcut.name}</span>
+          <span class="shortcut-domain">${getDomainFromUrl(shortcut.url)}</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          ${tagsBadgeHtml}
+          <div class="card-actions" style="position:static; opacity:1; display:flex; gap:4px;">
+            <button class="action-btn edit-btn" title="Editar Atalho">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            <button class="action-btn delete-btn" title="Excluir">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="card-actions">
+          <button class="action-btn edit-btn" title="Editar Atalho">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+          </button>
+          <button class="action-btn delete-btn" title="Excluir">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="shortcut-icon-wrapper">
+          ${iconHtml}
+        </div>
+        <span class="shortcut-title">${shortcut.name}</span>
+      `;
+    }
 
     const iconImg = card.querySelector('.shortcut-icon');
     if (iconImg) {
@@ -182,7 +250,7 @@ function renderShortcutsGrid() {
       });
     }
 
-    // LEFT CLICK Handling (Regular click vs Ctrl/Cmd click)
+    // LEFT CLICK Handling
     card.addEventListener('click', (e) => {
       if (e.target.closest('.card-actions')) {
         e.preventDefault();
@@ -198,7 +266,7 @@ function renderShortcutsGrid() {
       }
     });
 
-    // MIDDLE CLICK / SCROLL BUTTON CLICK (auxclick / e.button === 1)
+    // MIDDLE CLICK / SCROLL BUTTON CLICK
     card.addEventListener('auxclick', (e) => {
       if (e.target.closest('.card-actions')) return;
       if (e.button === 1) {
@@ -207,21 +275,20 @@ function renderShortcutsGrid() {
       }
     });
 
-    // Prevent default middle-click auto-scroll icon on mousedown
     card.addEventListener('mousedown', (e) => {
       if (e.button === 1 && !e.target.closest('.card-actions')) {
         e.preventDefault();
       }
     });
 
-    // RIGHT CLICK: Open Settings Modal for this shortcut
+    // RIGHT CLICK
     card.addEventListener('contextmenu', (e) => {
       e.preventDefault();
       e.stopPropagation();
       openShortcutEditModal(shortcut);
     });
 
-    // EDIT BUTTON: Completely stop navigation and open edit modal
+    // EDIT BUTTON
     const editBtn = card.querySelector('.edit-btn');
     if (editBtn) {
       const handleEdit = (e) => {
@@ -234,7 +301,7 @@ function renderShortcutsGrid() {
       editBtn.addEventListener('mousedown', handleEdit);
     }
 
-    // DELETE BUTTON: Completely stop navigation and prompt delete
+    // DELETE BUTTON
     const deleteBtn = card.querySelector('.delete-btn');
     if (deleteBtn) {
       const handleDelete = (e) => {
@@ -255,15 +322,30 @@ function renderShortcutsGrid() {
   addCard.className = 'shortcut-card add-shortcut-card animate-entrance';
   addCard.style.setProperty('--index', filteredShortcuts.length);
   addCard.title = 'Adicionar Atalho';
-  addCard.innerHTML = `
-    <div class="shortcut-icon-wrapper add-icon-wrapper">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="5" x2="12" y2="19"></line>
-        <line x1="5" y1="12" x2="19" y2="12"></line>
-      </svg>
-    </div>
-    <span class="shortcut-title">Adicionar</span>
-  `;
+
+  if (shortcutsViewMode === 'table') {
+    addCard.innerHTML = `
+      <div class="shortcut-main-info">
+        <div class="shortcut-icon-wrapper add-icon-wrapper" style="width:28px; height:28px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </div>
+        <span class="shortcut-title" style="font-weight:600; color:var(--accent-color);">Adicionar Novo Atalho</span>
+      </div>
+    `;
+  } else {
+    addCard.innerHTML = `
+      <div class="shortcut-icon-wrapper add-icon-wrapper">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+      <span class="shortcut-title">Adicionar</span>
+    `;
+  }
   addCard.addEventListener('click', () => openShortcutEditModal());
   gridEl.appendChild(addCard);
 }
