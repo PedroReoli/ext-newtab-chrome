@@ -1,12 +1,14 @@
 /**
- * Automations Scheduler & Scratchpad Notes Module - Ultra-Compact Impeccable Craft
+ * Automations Scheduler & Scratchpad Notes Module - Dual-Layered Guaranteed Alarm Engine
  */
 
 let activeAlarms = [];
+let openedTabLogs = {};
 
 function initAutomationsModule() {
   initScheduler();
   initScratchpad();
+  initSchedulerTicker();
 }
 
 function initScheduler() {
@@ -27,9 +29,45 @@ function initScheduler() {
       createScheduledTabAlarm(url, time);
       urlInput.value = '';
       timeInput.value = '';
-      showToast(`Guia agendada para às ${time}!`);
+      if (typeof showToast === 'function') {
+        showToast(`Guia agendada para às ${time}!`);
+      }
     });
   }
+}
+
+function initSchedulerTicker() {
+  setInterval(checkAndTriggerAlarms, 4000);
+  checkAndTriggerAlarms();
+}
+
+function checkAndTriggerAlarms() {
+  if (!activeAlarms || activeAlarms.length === 0) return;
+
+  const now = new Date();
+  const currentHours = String(now.getHours()).padStart(2, '0');
+  const currentMins = String(now.getMinutes()).padStart(2, '0');
+  const currentTimeStr = `${currentHours}:${currentMins}`;
+  const todayDateStr = now.toISOString().split('T')[0];
+
+  activeAlarms.forEach(alarm => {
+    if (alarm.time === currentTimeStr) {
+      const logKey = `${alarm.id}_${todayDateStr}_${currentTimeStr}`;
+      if (!openedTabLogs[logKey]) {
+        openedTabLogs[logKey] = true;
+
+        if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
+          chrome.tabs.create({ url: alarm.url, active: true });
+        } else {
+          window.open(alarm.url, '_blank');
+        }
+
+        if (typeof showToast === 'function') {
+          showToast(`🔔 Automação Disparada: ${alarm.url}`);
+        }
+      }
+    }
+  });
 }
 
 function createScheduledTabAlarm(url, timeStr) {
@@ -81,6 +119,9 @@ function loadActiveAlarms() {
 
 function saveActiveAlarms() {
   localStorage.setItem('custom_newtab_alarms', JSON.stringify(activeAlarms));
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+    chrome.storage.local.set({ custom_newtab_alarms: activeAlarms });
+  }
 }
 
 function renderAlarmsList() {
@@ -118,7 +159,11 @@ function renderAlarmsList() {
     const deleteBtn = item.querySelector('.del-act');
 
     testBtn.addEventListener('click', () => {
-      window.open(alarm.url, '_blank');
+      if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
+        chrome.tabs.create({ url: alarm.url, active: true });
+      } else {
+        window.open(alarm.url, '_blank');
+      }
     });
 
     deleteBtn.addEventListener('click', () => {
@@ -136,7 +181,9 @@ function deleteAlarm(id, alarmName) {
   activeAlarms = activeAlarms.filter(a => a.id !== id);
   saveActiveAlarms();
   renderAlarmsList();
-  showToast('Agendamento removido.');
+  if (typeof showToast === 'function') {
+    showToast('Agendamento removido.');
+  }
 }
 
 /**
