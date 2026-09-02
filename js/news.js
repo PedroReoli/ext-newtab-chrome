@@ -1,17 +1,19 @@
 /**
- * News & Trending Hub Engine with High-Density Feed Loading, Precise Date Formatting & Read Metrics Tracker
+ * News & Trending Hub Engine with Persistent Historical Archive & Date Categorization
  */
 
 let currentNiche = 'tech';
-let cachedNewsData = [];
 let newsSearchQuery = '';
 let isAutoTranslateEnabled = false;
+let newsArchive = [];
+let activeDateFilter = 'Todos';
 
 function initNewsModule() {
   const newsSearchInput = document.getElementById('news-search-input');
   const addNicheBtn = document.getElementById('add-custom-niche-btn');
   const translateBtn = document.getElementById('news-translate-btn');
 
+  loadNewsArchive();
   initNichePills();
 
   if (translateBtn) {
@@ -21,7 +23,7 @@ function initNewsModule() {
   if (newsSearchInput) {
     newsSearchInput.addEventListener('input', (e) => {
       newsSearchQuery = e.target.value.trim().toLowerCase();
-      renderNewsGrid(cachedNewsData);
+      renderNewsGrid();
     });
   }
 
@@ -30,6 +32,52 @@ function initNewsModule() {
   }
 
   fetchNewsForNiche(currentNiche);
+}
+
+function loadNewsArchive() {
+  const saved = localStorage.getItem('custom_newtab_news_archive');
+  if (saved) {
+    try {
+      newsArchive = JSON.parse(saved);
+    } catch (e) {
+      newsArchive = [];
+    }
+  }
+  renderDateFilterPills();
+}
+
+function saveNewsArchive() {
+  // Keep up to 300 news items max in local archive
+  if (newsArchive.length > 300) {
+    newsArchive = newsArchive.slice(0, 300);
+  }
+  localStorage.setItem('custom_newtab_news_archive', JSON.stringify(newsArchive));
+}
+
+function mergeAndSaveNewsArchive(fetchedItems, niche) {
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  fetchedItems.forEach(item => {
+    const existingIndex = newsArchive.findIndex(a => a.url === item.url || a.title === item.title);
+    if (existingIndex !== -1) {
+      newsArchive[existingIndex] = {
+        ...newsArchive[existingIndex],
+        ...item,
+        captureDate: newsArchive[existingIndex].captureDate || todayStr
+      };
+    } else {
+      newsArchive.unshift({
+        ...item,
+        id: Date.now() + Math.random().toString(36).substring(2, 7),
+        niche: niche || currentNiche,
+        captureDate: todayStr
+      });
+    }
+  });
+
+  saveNewsArchive();
+  renderDateFilterPills();
+  renderNewsGrid();
 }
 
 function formatNewsDate(dateStr) {
@@ -42,9 +90,63 @@ function formatNewsDate(dateStr) {
     const hours = String(d.getHours()).padStart(2, '0');
     const mins = String(d.getMinutes()).padStart(2, '0');
     return `${day}/${month} • ${hours}:${mins}`;
-  } catch(e) {
+  } catch (e) {
     return 'Hoje';
   }
+}
+
+function formatDateLabel(dateStr) {
+  if (!dateStr) return 'Hoje';
+  const todayStr = new Date().toISOString().split('T')[0];
+  const yesterdayDate = new Date();
+  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+  const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+  if (dateStr === todayStr) return 'Hoje';
+  if (dateStr === yesterdayStr) return 'Ontem';
+
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    return `${parts[2]}/${parts[1]}`;
+  }
+  return dateStr;
+}
+
+function renderDateFilterPills() {
+  const container = document.getElementById('news-date-filters-bar');
+  if (!container) return;
+
+  const dateCounts = {};
+  newsArchive.forEach(item => {
+    const date = item.captureDate || new Date().toISOString().split('T')[0];
+    dateCounts[date] = (dateCounts[date] || 0) + 1;
+  });
+
+  const sortedDates = Object.keys(dateCounts).sort((a, b) => b.localeCompare(a));
+
+  container.innerHTML = '';
+
+  const allPill = document.createElement('button');
+  allPill.className = `date-pill ${activeDateFilter === 'Todos' ? 'active' : ''}`;
+  allPill.textContent = `📅 Todas as Datas (${newsArchive.length})`;
+  allPill.addEventListener('click', () => {
+    activeDateFilter = 'Todos';
+    renderDateFilterPills();
+    renderNewsGrid();
+  });
+  container.appendChild(allPill);
+
+  sortedDates.forEach(dateStr => {
+    const pill = document.createElement('button');
+    pill.className = `date-pill ${activeDateFilter === dateStr ? 'active' : ''}`;
+    pill.textContent = `📅 ${formatDateLabel(dateStr)} (${dateCounts[dateStr]})`;
+    pill.addEventListener('click', () => {
+      activeDateFilter = dateStr;
+      renderDateFilterPills();
+      renderNewsGrid();
+    });
+    container.appendChild(pill);
+  });
 }
 
 function toggleAutoTranslate() {
@@ -69,7 +171,7 @@ function toggleAutoTranslate() {
     }
   }
 
-  renderNewsGrid(cachedNewsData);
+  renderNewsGrid();
 }
 
 async function translateTextToPT(text) {
@@ -120,16 +222,16 @@ function createCustomNiche() {
     document.querySelectorAll('.niche-pill').forEach(p => p.classList.remove('active'));
     newPill.classList.add('active');
     currentNiche = nicheSlug;
-    fetchGoogleNewsRSS(topic.trim());
+    fetchGoogleNewsRSS(topic.trim(), nicheSlug);
   });
 
-  fetchGoogleNewsRSS(topic.trim());
+  fetchGoogleNewsRSS(topic.trim(), nicheSlug);
 }
 
 async function fetchNewsForNiche(niche) {
   const gridEl = document.getElementById('news-grid');
-  if (gridEl) {
-    gridEl.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; grid-column:1/-1;">Carregando notícias em tempo real...</div>';
+  if (gridEl && newsArchive.length === 0) {
+    gridEl.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; grid-column:1/-1;">Buscando e armazenando últimas notícias...</div>';
   }
 
   try {
@@ -140,12 +242,12 @@ async function fetchNewsForNiche(niche) {
     } else if (niche === 'github') {
       await fetchGitHubTrending();
     } else if (niche === 'ai') {
-      await fetchGoogleNewsRSS('Inteligencia Artificial OR ChatGPT OR Gemini OR Claude');
+      await fetchGoogleNewsRSS('Inteligencia Artificial OR ChatGPT OR Gemini OR Claude', 'ai');
     } else {
-      await fetchGoogleNewsRSS('Tecnologia OR Inovacao OR Startups OR Programacao');
+      await fetchGoogleNewsRSS('Tecnologia OR Inovacao OR Startups OR Programacao', 'tech');
     }
   } catch (err) {
-    renderNewsGrid(getFallbackNews());
+    mergeAndSaveNewsArchive(getFallbackNews(), niche);
   }
 }
 
@@ -153,7 +255,7 @@ async function fetchDevToArticles() {
   try {
     const res = await fetch('https://dev.to/api/articles?tag=tech&per_page=30');
     const data = await res.json();
-    cachedNewsData = data.map(item => ({
+    const items = data.map(item => ({
       title: item.title,
       url: item.url,
       source: 'Dev.to',
@@ -161,9 +263,9 @@ async function fetchDevToArticles() {
       snippet: item.description || item.readable_publish_date,
       time: formatNewsDate(item.published_at || item.created_at)
     }));
-    renderNewsGrid(cachedNewsData);
+    mergeAndSaveNewsArchive(items, 'dev');
   } catch (err) {
-    renderNewsGrid(getFallbackNews());
+    mergeAndSaveNewsArchive(getFallbackNews(), 'dev');
   }
 }
 
@@ -173,11 +275,11 @@ async function fetchHackerNews() {
     const ids = await res.json();
     const topIds = ids.slice(0, 25);
 
-    const items = await Promise.all(
+    const rawItems = await Promise.all(
       topIds.map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json()))
     );
 
-    cachedNewsData = items.filter(Boolean).map(item => ({
+    const items = rawItems.filter(Boolean).map(item => ({
       title: item.title,
       url: item.url || `https://news.ycombinator.com/item?id=${item.id}`,
       source: 'Hacker News',
@@ -185,9 +287,9 @@ async function fetchHackerNews() {
       snippet: `Pontos: ${item.score || 0} • Comentários: ${item.descendants || 0}`,
       time: formatNewsDate(item.time ? item.time * 1000 : null)
     }));
-    renderNewsGrid(cachedNewsData);
+    mergeAndSaveNewsArchive(items, 'hackernews');
   } catch (err) {
-    renderNewsGrid(getFallbackNews());
+    mergeAndSaveNewsArchive(getFallbackNews(), 'hackernews');
   }
 }
 
@@ -195,7 +297,7 @@ async function fetchGitHubTrending() {
   try {
     const res = await fetch('https://api.github.com/search/repositories?q=created:>2026-08-01&sort=stars&order=desc&per_page=25');
     const data = await res.json();
-    cachedNewsData = (data.items || []).map(repo => ({
+    const items = (data.items || []).map(repo => ({
       title: `${repo.owner.login} / ${repo.name}`,
       url: repo.html_url,
       source: 'GitHub Trending',
@@ -203,20 +305,20 @@ async function fetchGitHubTrending() {
       snippet: repo.description || 'Projeto Open Source em destaque no GitHub.',
       time: `⭐ ${repo.stargazers_count} stars`
     }));
-    renderNewsGrid(cachedNewsData);
+    mergeAndSaveNewsArchive(items, 'github');
   } catch (err) {
-    renderNewsGrid(getFallbackNews());
+    mergeAndSaveNewsArchive(getFallbackNews(), 'github');
   }
 }
 
-async function fetchGoogleNewsRSS(query) {
+async function fetchGoogleNewsRSS(query, niche = 'tech') {
   try {
     const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=pt-BR&gl=BR&ceid=BR:pt-419`;
     const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&api_key=`);
     const data = await res.json();
 
     if (data.items && data.items.length > 0) {
-      cachedNewsData = data.items.map(item => ({
+      const items = data.items.map(item => ({
         title: item.title,
         url: item.link,
         source: item.author || 'Google News',
@@ -224,24 +326,36 @@ async function fetchGoogleNewsRSS(query) {
         snippet: item.description ? item.description.replace(/<[^>]*>/g, '').slice(0, 140) + '...' : '',
         time: formatNewsDate(item.pubDate)
       }));
-      renderNewsGrid(cachedNewsData);
+      mergeAndSaveNewsArchive(items, niche);
     } else {
-      renderNewsGrid(getFallbackNews());
+      mergeAndSaveNewsArchive(getFallbackNews(), niche);
     }
   } catch (err) {
-    renderNewsGrid(getFallbackNews());
+    mergeAndSaveNewsArchive(getFallbackNews(), niche);
   }
 }
 
-async function renderNewsGrid(newsList) {
+async function renderNewsGrid() {
   const gridEl = document.getElementById('news-grid');
   if (!gridEl) return;
 
   gridEl.innerHTML = '';
 
-  const filtered = newsList.filter(item => {
-    if (!newsSearchQuery) return true;
-    return item.title.toLowerCase().includes(newsSearchQuery) || item.snippet.toLowerCase().includes(newsSearchQuery);
+  const filtered = newsArchive.filter(item => {
+    // Filter by niche if not doing global search
+    if (!newsSearchQuery && currentNiche && item.niche && item.niche !== currentNiche) {
+      return false;
+    }
+    // Filter by active capture date
+    if (activeDateFilter !== 'Todos') {
+      const itemDate = item.captureDate || new Date().toISOString().split('T')[0];
+      if (itemDate !== activeDateFilter) return false;
+    }
+    // Filter by search query
+    if (newsSearchQuery) {
+      return item.title.toLowerCase().includes(newsSearchQuery) || (item.snippet && item.snippet.toLowerCase().includes(newsSearchQuery));
+    }
+    return true;
   });
 
   const totalMetricsEl = document.getElementById('metrics-news-total');
@@ -250,7 +364,7 @@ async function renderNewsGrid(newsList) {
   }
 
   if (filtered.length === 0) {
-    gridEl.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; grid-column:1/-1;">Nenhuma notícia encontrada com este filtro.</div>';
+    gridEl.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; grid-column:1/-1;">Nenhuma notícia salva neste filtro de data/nicho.</div>';
     return;
   }
 
@@ -280,6 +394,8 @@ async function renderNewsGrid(newsList) {
       }
     });
 
+    const captureLabel = formatDateLabel(item.captureDate);
+
     card.innerHTML = `
       <div>
         <div class="news-card-header">
@@ -288,6 +404,7 @@ async function renderNewsGrid(newsList) {
             <span>${item.source}</span>
           </div>
           <div style="display:flex; align-items:center; gap:6px;">
+            <span class="news-translated-badge" style="background:rgba(59, 130, 246, 0.15); color:var(--accent-color);">📅 ${captureLabel}</span>
             ${isAutoTranslateEnabled ? `<span class="news-translated-badge">🌐 PT-BR</span>` : ''}
             <span class="news-time-text">${item.time}</span>
           </div>
@@ -323,7 +440,7 @@ function getFallbackNews() {
       source: 'Tech News',
       sourceIcon: 'https://news.google.com/favicon.ico',
       snippet: 'Desenvolvimentos recentes em agentes de código e grandes modelos de linguagem revolucionam o fluxo de trabalho de devs.',
-      time: '27/08 • 19:22'
+      time: '19:22'
     },
     {
       title: 'Top Ferramentas de Produtividade para Desenvolvedores em 2026',
@@ -331,7 +448,7 @@ function getFallbackNews() {
       source: 'Dev.to',
       sourceIcon: 'https://dev.to/favicon.ico',
       snippet: 'Descubra extensões, utilitários CLI e automações que economizam horas no desenvolvimento diário.',
-      time: '27/08 • 18:45'
+      time: '18:45'
     }
   ];
 }

@@ -175,6 +175,43 @@
   box-shadow: 0 4px 12px var(--accent-glow);
 }
 
+/* News Date Filter Pills Bar */
+.news-date-filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--card-border);
+  scrollbar-width: thin;
+}
+
+.date-pill {
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--card-border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.date-pill:hover {
+  color: var(--text-primary);
+  border-color: var(--card-border-hover);
+  background: var(--card-hover-bg);
+}
+
+.date-pill.active {
+  background: var(--accent-glow);
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
 /* High-Density Ultra-Compact News Cards Grid */
 .news-grid {
   display: grid;
