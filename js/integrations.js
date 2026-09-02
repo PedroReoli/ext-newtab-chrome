@@ -350,21 +350,8 @@ function initWeatherWidget() {
     if (descEl) descEl.textContent = cachedLoc;
   }
 
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        fetchWeatherAndCity(lat, lon);
-      },
-      (err) => {
-        fetchWeatherByIP();
-      },
-      { timeout: 6000, enableHighAccuracy: false }
-    );
-  } else {
-    fetchWeatherByIP();
-  }
+  // Fetch weather silently via IP without browser permission popups
+  fetchWeatherByIP();
 }
 
 async function fetchWeatherAndCity(lat, lon) {
