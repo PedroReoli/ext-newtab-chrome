@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLeftSidebarModule();
   initLiveMetricsEngine();
   initThemesModule();
+  initSidebarToggles();
 });
 
 function initDigitalClock() {
@@ -598,5 +599,50 @@ function renderActiveTagsManager() {
     }
 
     container.appendChild(pill);
+  });
+}
+
+function initSidebarToggles() {
+  const layout = document.querySelector('.studio-3column-layout');
+  if (!layout) return;
+
+  const leftBtns = document.querySelectorAll('#top-toggle-left-sidebar-btn, #toggle-left-sidebar-btn');
+  const rightBtns = document.querySelectorAll('#top-toggle-right-sidebar-btn, #toggle-right-sidebar-btn');
+
+  const isLeftCollapsed = localStorage.getItem('custom_newtab_left_sidebar_collapsed') === 'true';
+  const isRightCollapsed = localStorage.getItem('custom_newtab_right_sidebar_collapsed') === 'true';
+
+  if (isLeftCollapsed) {
+    layout.classList.add('left-collapsed');
+    leftBtns.forEach(b => b.classList.add('collapsed'));
+  }
+
+  if (isRightCollapsed) {
+    layout.classList.add('right-collapsed');
+    rightBtns.forEach(b => b.classList.add('collapsed'));
+  }
+
+  leftBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const nowCollapsed = layout.classList.toggle('left-collapsed');
+      localStorage.setItem('custom_newtab_left_sidebar_collapsed', nowCollapsed);
+      leftBtns.forEach(b => {
+        if (nowCollapsed) b.classList.add('collapsed');
+        else b.classList.remove('collapsed');
+      });
+      showToast(nowCollapsed ? 'Sidebar de Produtividade Ocultada' : 'Sidebar de Produtividade Exibida');
+    });
+  });
+
+  rightBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const nowCollapsed = layout.classList.toggle('right-collapsed');
+      localStorage.setItem('custom_newtab_right_sidebar_collapsed', nowCollapsed);
+      rightBtns.forEach(b => {
+        if (nowCollapsed) b.classList.add('collapsed');
+        else b.classList.remove('collapsed');
+      });
+      showToast(nowCollapsed ? 'Sidebar de Métricas Ocultada' : 'Sidebar de Métricas Exibida');
+    });
   });
 }
