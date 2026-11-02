@@ -1,554 +1,70 @@
-<!DOCTYPE html>
-<html lang="pt-BR" data-theme="zinc">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova Guia</title>
-  
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ReoliTab</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/shortcuts.css">
-  <link rel="stylesheet" href="css/bookmarks.css">
   <link rel="stylesheet" href="css/automations.css">
-  <link rel="stylesheet" href="css/leftsidebar.css">
-  <link rel="stylesheet" href="css/news.css">
-  <link rel="stylesheet" href="css/integrations.css">
   <link rel="stylesheet" href="css/modal.css">
 </head>
 <body>
-
-  <!-- Top Glassmorphism Navigation Bar with Live Digital Clock & Service Ring Bell Hub -->
-  <header class="top-nav-bar">
-    <div class="nav-brand">
-      <div class="brand-logo-icon"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
-      <span class="brand-title">ReoliTab</span>
-      <span class="brand-version-pill">v48.0</span>
-    </div>
-
-    <!-- Live Digital Clock Inline with Dynamic Greeting (Boa noite / Bom dia / Boa tarde) -->
-    <div id="top-digital-clock" style="display:flex; align-items:center; gap:0.55rem; font-size:0.83rem; font-weight:700; color:var(--text-primary); background:var(--bg-surface); padding:0.35rem 0.85rem; border-radius:var(--radius-full); border:1px solid var(--card-border); box-shadow:var(--shadow-sm);">
-      <span id="clock-greeting-badge" style="display:inline-flex; align-items:center; gap:0.35rem; color:var(--accent-color); font-weight:700; background:var(--accent-glow); padding:2px 8px; border-radius:var(--radius-full); font-size:0.75rem;">
-        <svg id="clock-greeting-icon" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-        <span id="clock-greeting-text">Boa noite</span>
-      </span>
-      <span id="clock-time-text" style="font-size:0.88rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.02em;">23:44</span>
-      <span id="clock-date-text" style="font-size:0.75rem; color:var(--text-muted); font-weight:500;">qui, 27 de ago.</span>
-    </div>
-
-    <nav class="nav-tabs">
-      <button class="nav-tab active" data-target="shortcuts-view">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-        <span>Atalhos</span>
-      </button>
-      <button class="nav-tab" data-target="bookmarks-view">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-        <span>Favoritos</span>
-      </button>
-      <button class="nav-tab" data-target="automations-view">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        <span>Automações</span>
-      </button>
-      <button class="nav-tab" data-target="news-view">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path></svg>
-        <span>Notícias & Trends</span>
-      </button>
-      <button class="nav-tab" data-target="settings-view">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        <span>Configurações</span>
-      </button>
-
-      <!-- Ring Bell Notification & Sidebar Toggle Controls -->
-      <div class="ring-bell-container" style="display:flex; align-items:center; gap:0.4rem;">
-        <button id="top-toggle-left-sidebar-btn" class="ring-bell-btn" title="Ocultar/Exibir Painel de Produtividade (Esquerda)">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-        </button>
-
-        <button id="ring-bell-btn" class="ring-bell-btn" title="Central de Alertas & Sessões">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-          <span id="bell-badge-dot" class="bell-badge-dot" style="display:none;"></span>
-        </button>
-
-        <button id="top-toggle-right-sidebar-btn" class="ring-bell-btn" title="Ocultar/Exibir Painel de Métricas (Direita)">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-        </button>
-
-        <div id="bell-auth-popover" class="bell-auth-popover">
-          <div class="popover-header">
-            <span>Status das Sessões & Permissões</span>
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-          </div>
-          <div id="popover-ytmusic-row" class="popover-service-row">
-            <div style="display:flex; align-items:center; gap:6px;">
-              <span id="status-dot-ytmusic" class="status-dot online"></span>
-              <span style="font-weight:600;">YouTube Music</span>
-            </div>
-            <span id="status-msg-ytmusic" style="color:var(--text-muted);">Disponível</span>
-          </div>
-          <div id="popover-antigravity-row" class="popover-service-row">
-            <div style="display:flex; align-items:center; gap:6px;">
-              <span id="status-dot-antigravity" class="status-dot online"></span>
-              <span style="font-weight:600;">Antigravity Studio</span>
-            </div>
-            <span id="status-msg-antigravity" style="color:var(--success-color);">Porta 63060</span>
-          </div>
-        </div>
-      </div>
+  <header class="app-header">
+    <nav class="main-nav" aria-label="Navegação principal" role="tablist">
+      <button class="nav-tab active" type="button" role="tab" aria-label="Atalhos" aria-selected="true" aria-controls="shortcuts-view" data-target="shortcuts-view"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Atalhos</span></button>
+      <button class="nav-tab" type="button" role="tab" aria-label="Automações" aria-selected="false" aria-controls="automations-view" data-target="automations-view"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Automações</span></button>
+      <button class="nav-tab" type="button" role="tab" aria-label="Ajustes" aria-selected="false" aria-controls="settings-view" data-target="settings-view"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1-2.8-2.8.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3v-4h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1 2.8-2.8.1.1a1.7 1.7 0 0 0 1.8.3 1.7 1.7 0 0 0 1-1.5V3h4v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1 2.8 2.8-.1.1a1.7 1.7 0 0 0-.3 1.8 1.7 1.7 0 0 0 1.5 1h.2v4h-.2a1.7 1.7 0 0 0-1.4 1Z"/></svg><span>Ajustes</span></button>
     </nav>
   </header>
 
-  <!-- Global Workspace Container -->
-  <main class="app-workspace">
-
-    <!-- View 1: Main Workspace - 3 Column Architecture -->
-    <div id="shortcuts-view" class="view-panel active">
-      <div class="studio-3column-layout">
-        
-        <!-- 1. LEFT SIDEBAR: Productivity & Focus Tools -->
-        <aside class="left-productivity-sidebar">
-          <div class="pomodoro-card">
-            <div class="pomodoro-header">
-              <div class="pomodoro-title"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg><span>Timer Pomodoro</span></div>
-              <span id="pomodoro-mode-badge" class="pomodoro-mode-badge">Foco</span>
-            </div>
-            <div class="pomodoro-presets-bar">
-              <button class="pomo-preset-btn active" data-focus="25" data-break="5">25/5</button>
-              <button class="pomo-preset-btn" data-focus="50" data-break="10">50/10</button>
-              <button class="pomo-preset-btn" data-focus="90" data-break="15">90/15</button>
-            </div>
-            <div id="pomodoro-display" class="pomodoro-display">25:00</div>
-            <div class="pomodoro-actions">
-              <button id="pomodoro-start-btn" class="btn btn-primary btn-sm">Iniciar</button>
-              <button id="pomodoro-reset-btn" class="btn btn-secondary btn-sm">Reset</button>
-            </div>
-            <div class="pomodoro-custom-time-row">
-              <input type="number" id="pomo-custom-focus" value="25" min="1" max="180" title="Minutos de Foco">
-              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">m Foco /</span>
-              <input type="number" id="pomo-custom-break" value="5" min="1" max="60" title="Minutos de Pausa">
-              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">m Pausa</span>
-            </div>
-          </div>
-
-          <div class="checklist-card">
-            <div class="checklist-header">
-              <span>Checklist de Hoje</span>
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            </div>
-            <div class="checklist-progress-wrapper">
-              <div class="checklist-progress-info"><span>Progresso das Tarefas:</span><span id="checklist-progress-text">0%</span></div>
-              <div class="checklist-progress-track"><div id="checklist-progress-fill" class="checklist-progress-fill"></div></div>
-            </div>
-            <form id="checklist-form" class="checklist-form">
-              <input type="text" id="checklist-input" class="checklist-input" placeholder="Nova tarefa do dia..." required>
-              <button type="submit" class="btn btn-primary btn-sm" title="Adicionar Tarefa"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
-            </form>
-            <div id="checklist-items-list" class="checklist-items-list"></div>
-            <div id="checklist-paginator" class="checklist-paginator" style="display:none;"></div>
-          </div>
-
-          <div class="network-health-card">
-            <span>Rede & Latência:</span>
-            <span id="network-ping-val" class="network-ping-val"><span class="status-dot online"></span> 18ms • Estável</span>
-          </div>
-
-          <div class="utilities-card">
-            <div class="utility-row"><span>Abas Abertas no Chrome:</span><span id="util-tabs-count" class="utility-val">...</span></div>
-            <div class="utility-row"><span>Total de Atalhos:</span><span id="util-shortcuts-count" class="utility-val">...</span></div>
-          </div>
-        </aside>
-
-        <!-- 2. CENTER COLUMN: Main Shortcuts Content -->
-        <div class="shortcuts-container">
-          <div class="shortcuts-header-bar">
-            <button id="toggle-left-sidebar-btn" class="sidebar-toggle-chip" title="Ocultar/Exibir Painel de Produtividade (Esquerda)">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-              <span>Produtividade</span>
-            </button>
-
-            <div id="tag-filters-bar" class="tag-filters-bar"></div>
-
-            <div class="shortcuts-view-mode-group">
-              <button class="shortcuts-mode-btn active" data-mode="grid" title="Modo Grid Padrão">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-              </button>
-              <button class="shortcuts-mode-btn" data-mode="compact" title="Modo Grade Mini (Compacto)">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="4" height="4"></rect><rect x="10" y="3" width="4" height="4"></rect><rect x="17" y="3" width="4" height="4"></rect><rect x="3" y="10" width="4" height="4"></rect><rect x="10" y="10" width="4" height="4"></rect><rect x="17" y="10" width="4" height="4"></rect><rect x="3" y="17" width="4" height="4"></rect><rect x="10" y="17" width="4" height="4"></rect><rect x="17" y="17" width="4" height="4"></rect></svg>
-              </button>
-              <button class="shortcuts-mode-btn" data-mode="table" title="Modo Lista / Tabela">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-              </button>
-            </div>
-
-            <button id="toggle-right-sidebar-btn" class="sidebar-toggle-chip" title="Ocultar/Exibir Painel de Métricas (Direita)">
-              <span>Métricas</span>
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg>
-            </button>
-          </div>
-
-          <div id="shortcuts-grid" class="shortcuts-grid"></div>
-        </div>
-
-        <!-- 3. RIGHT SIDEBAR: Painel de Dados & Métricas ao Vivo -->
-        <aside id="widgets-sidebar" class="widgets-sidebar">
-          
-          <!-- Weather & Live Currency Data -->
-          <div class="widget-item-card widget-dev">
-            <div class="weather-card-body">
-              <div class="weather-temp-badge">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="color:#f59e0b;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>
-                <span id="weather-temp-val">24°C</span>
-              </div>
-              <span id="weather-desc-text" class="weather-desc-text">Detectando...</span>
-            </div>
-            <div class="currency-ticker-options">
-              <div class="currency-ticker-item"><span class="currency-symbol-lbl">USD</span><span id="rate-usd-val" class="currency-rate-val">R$ 5.42</span></div>
-              <div class="currency-ticker-item"><span class="currency-symbol-lbl">EUR</span><span id="rate-eur-val" class="currency-rate-val">R$ 5.91</span></div>
-              <div class="currency-ticker-item"><span class="currency-symbol-lbl">BTC</span><span id="rate-btc-val" class="currency-rate-val">$64.2k</span></div>
-            </div>
-          </div>
-
-          <!-- Métricas das Notícias API & Leitura do Usuário -->
-          <div class="widget-item-card widget-dev">
-            <div class="widget-card-header">
-              <div class="widget-badge-title" style="color:var(--accent-color);">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path></svg>
-                <span>Métricas de Notícias & Leitura</span>
-              </div>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:0.4rem; background:var(--bg-surface); padding:0.6rem 0.75rem; border-radius:var(--radius-sm); border:1px solid var(--card-border);">
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem;">
-                <span style="color:var(--text-secondary);">Notícias Captadas (API):</span>
-                <span id="metrics-news-total" style="font-weight:700; color:var(--accent-color);">30 itens</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem;">
-                <span style="color:var(--text-secondary);">Notícias Lidas / Clicadas:</span>
-                <span id="metrics-news-read" style="font-weight:700; color:var(--success-color);">0 lidas</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Métricas de Produtividade do Usuário -->
-          <div class="widget-item-card widget-dev">
-            <div class="widget-card-header">
-              <div class="widget-badge-title" style="color:#10b981;">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                <span>Métricas de Desempenho</span>
-              </div>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:0.4rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; background:var(--bg-surface); padding:0.4rem 0.65rem; border-radius:var(--radius-sm); border:1px solid var(--card-border);">
-                <span style="color:var(--text-secondary);">Pomodoros Concluídos Hoje:</span>
-                <span id="metrics-pomo-count" style="font-weight:700; color:var(--accent-color);">0 ciclos</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.76rem; background:var(--bg-surface); padding:0.4rem 0.65rem; border-radius:var(--radius-sm); border:1px solid var(--card-border);">
-                <span style="color:var(--text-secondary);">Conclusão do Checklist:</span>
-                <span id="metrics-checklist-percent" style="font-weight:700; color:var(--success-color);">0%</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Status do Servidor Antigravity Studio -->
-          <div class="widget-item-card widget-dev">
-            <div class="antigravity-badge">
-              <div style="display:flex; align-items:center; gap:0.4rem;">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 17 22 12"></polyline></svg>
-                <span>Antigravity Studio</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span id="antigravity-status-dot" class="status-dot online"></span>
-                <span id="antigravity-status-text" style="font-size:0.75rem; color:var(--text-muted);">ONLINE</span>
-              </div>
-            </div>
-            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">Servidor local na porta <code style="color:var(--accent-color);">https://127.0.0.1:63060/</code>.</p>
-          </div>
-
-        </aside>
-      </div>
-    </div>
-
-    <!-- View 2: Bookmarks View with Dynamic View Switcher (Explorer vs Ribbon) -->
-    <div id="bookmarks-view" class="view-panel mode-explorer">
-      <div class="bookmarks-mode-bar">
-        <div class="bookmarks-mode-top-row">
-          <div class="mode-switcher-group">
-            <button id="mode-explorer-btn" class="mode-btn active" title="Modo Explorer (2 Colunas)">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-              Explorer (Árvore + Cards)
-            </button>
-            <button id="mode-ribbon-btn" class="mode-btn" title="Modo Barra Horizontal">
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-              Barra de Favoritos (Ribbon)
-            </button>
-          </div>
-          <span id="save-indicator" class="save-indicator"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>Alterações Salvas</span>
-        </div>
-
-        <div class="bookmarks-smart-filters-row">
-          <select id="filter-root-folder-select" class="filter-select"><option value="all">Todas as Pastas Mãe</option></select>
-          <select id="filter-hierarchy-depth-select" class="filter-select">
-            <option value="all">Todas as Hierarquias</option>
-            <option value="1">Apenas Nível 1 (Pastas Mãe / Raiz)</option>
-            <option value="2">Apenas Nível 2 (Subpastas)</option>
-            <option value="3">Nível 3 ou mais profundo</option>
-          </select>
-          <label class="filter-checkbox-label"><input type="checkbox" id="filter-hide-empty-folders"><span>Ocultar Pastas Vazias</span></label>
+  <main class="app-main">
+    <section id="shortcuts-view" class="view-panel active" role="tabpanel">
+      <header class="view-heading"><div><p class="section-kicker">Acesso rápido</p><h1>Seus atalhos</h1><p>Shift/Ctrl + clique seleciona vários. Arraste o lote ou clique com o botão direito para editar.</p></div><button id="add-shortcut-btn" class="button button-primary" type="button">Novo atalho</button></header>
+      <div id="shortcut-group-context" class="shortcut-group-context" hidden><button id="shortcut-group-back" class="button button-secondary" type="button">← Todos os atalhos</button><strong id="shortcut-group-name"></strong></div>
+      <div class="shortcuts-toolbar panel">
+        <div id="tag-filters-bar" class="tag-filters-bar" aria-label="Filtrar atalhos por tag"></div>
+        <div class="shortcuts-view-modes" role="group" aria-label="Modo de visualização">
+          <button class="shortcut-mode-button active" type="button" data-mode="grid" aria-label="Grade padrão" title="Grade padrão"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></button>
+          <button class="shortcut-mode-button" type="button" data-mode="compact" aria-label="Grade compacta" title="Grade compacta"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="4" height="4"/><rect x="10" y="3" width="4" height="4"/><rect x="17" y="3" width="4" height="4"/><rect x="3" y="10" width="4" height="4"/><rect x="10" y="10" width="4" height="4"/><rect x="17" y="10" width="4" height="4"/><rect x="3" y="17" width="4" height="4"/><rect x="10" y="17" width="4" height="4"/><rect x="17" y="17" width="4" height="4"/></svg></button>
+          <button class="shortcut-mode-button" type="button" data-mode="table" aria-label="Modo lista" title="Modo lista"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
         </div>
       </div>
+      <div id="shortcut-selection-bar" class="shortcut-selection-bar panel" hidden><strong id="shortcut-selection-count">0 selecionados</strong><span>Arraste o lote para reordenar ou criar um grupo.</span><button id="create-shortcut-group-btn" class="button button-primary" type="button">Criar grupo</button><button id="clear-shortcut-selection-btn" class="button button-secondary" type="button">Limpar seleção</button></div>
+      <div id="shortcuts-grid" class="shortcuts-grid" aria-live="polite"></div>
+    </section>
 
-      <div id="bookmarks-ribbon-container" class="bookmarks-ribbon-container">
-        <div id="bookmark-ribbon-list" class="ribbon-list"></div>
+    <section id="automations-view" class="view-panel" role="tabpanel" hidden>
+      <header class="view-heading"><div><p class="section-kicker">Agendador</p><h1>Automações de páginas</h1><p>Veja o que vai abrir, quando e em qual estado.</p></div><label class="master-switch"><input id="automations-master-toggle" type="checkbox" checked><span aria-hidden="true"></span><strong id="master-toggle-label">Tudo ativo</strong></label></header>
+      <div class="automations-layout">
+        <section class="automation-list-panel panel" aria-label="Automações cadastradas"><div class="automation-list-header"><div><h2>Agenda</h2><p id="automation-summary">Nenhuma automação</p></div><div class="automation-list-tools"><label><span>Ordenar</span><select id="automation-sort"><option value="next">Próxima execução</option><option value="status">Estado</option><option value="name">Nome</option></select></label><button id="clear-history-btn" class="automation-icon-button" type="button" aria-label="Limpar histórico" title="Limpar histórico">🧹</button></div></div><div id="automations-list" class="automations-list" aria-live="polite"></div></section>
+        <form id="automation-form" class="automation-form panel" novalidate>
+          <div class="panel-heading"><div><h2 id="automation-form-title">Nova automação</h2><p>Configure página, horário e recorrência.</p></div><button id="cancel-automation-edit-btn" class="automation-icon-button" type="button" aria-label="Cancelar edição" title="Cancelar edição" hidden>×</button></div><input id="automation-id" type="hidden">
+          <label class="field"><span>Nome</span><input id="automation-name" type="text" maxlength="80" placeholder="Ex.: Abrir painel do trabalho" required></label>
+          <label class="field"><span>Endereço</span><input id="automation-url" type="url" placeholder="https://exemplo.com" required></label>
+          <div class="field-row"><label class="field"><span>Horário</span><input id="automation-time" type="time" required></label><label class="field"><span>Recorrência</span><select id="automation-recurrence"><option value="weekdays">Segunda a sexta</option><option value="daily">Todos os dias</option><option value="custom">Dias personalizados</option><option value="once">Apenas uma vez</option></select></label></div>
+          <fieldset id="automation-days-fieldset" class="days-fieldset"><legend>Dias da semana</legend><div class="day-picker"><label><input type="checkbox" value="1" checked><span>Seg</span></label><label><input type="checkbox" value="2" checked><span>Ter</span></label><label><input type="checkbox" value="3" checked><span>Qua</span></label><label><input type="checkbox" value="4" checked><span>Qui</span></label><label><input type="checkbox" value="5" checked><span>Sex</span></label><label><input type="checkbox" value="6"><span>Sáb</span></label><label><input type="checkbox" value="0"><span>Dom</span></label></div></fieldset>
+          <label class="check-row"><input id="automation-open-active" type="checkbox" checked><span>Abrir a página em primeiro plano</span></label><p id="automation-form-error" class="form-error" role="alert" hidden></p><button class="button button-primary button-full" type="submit">Salvar automação</button>
+        </form>
       </div>
+    </section>
 
-      <div id="bookmarks-explorer-container" class="bookmarks-explorer">
-        <aside id="bookmarks-sidebar" class="bookmarks-sidebar">
-          <div class="sidebar-header-row">
-            <span class="sidebar-title">Pastas</span>
-            <button id="collapse-all-folders-btn" class="btn btn-secondary btn-sm" title="Recolher Subpastas da Árvore"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6"></path><path d="M20 10h-6V4"></path><path d="M14 10l7-7"></path><path d="M3 21l7-7"></path></svg>Recolher Pastas</button>
-          </div>
-          <div id="folder-tree-list" class="folder-list"></div>
-        </aside>
-
-        <main class="bookmarks-main-panel">
-          <div class="bookmarks-top-bar">
-            <div id="breadcrumbs" class="breadcrumbs"><span>Favoritos</span></div>
-            <div class="bookmarks-search-box"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><input type="text" id="bookmarks-search-input" placeholder="Filtrar nesta pasta..."></div>
-          </div>
-
-          <div class="bulk-toolbar">
-            <label class="select-all-wrapper"><input type="checkbox" id="select-all-bookmarks"><span>Selecionar Todos</span></label>
-            <div class="bulk-btn-group">
-              <button id="bulk-open-btn" class="bulk-btn" disabled>Abrir Abas (<span id="bulk-count">0</span>)</button>
-              <button id="bulk-move-btn" class="bulk-btn" disabled>Mover</button>
-              <button id="bulk-delete-btn" class="bulk-btn danger" disabled>Excluir</button>
-              <button id="new-bookmark-btn" class="btn btn-primary btn-sm" style="margin-left:0.5rem;">Novo Favorito</button>
-            </div>
-          </div>
-
-          <div id="bookmarks-content-grid" class="bookmarks-content-grid"></div>
-        </main>
+    <section id="settings-view" class="view-panel" role="tabpanel" hidden>
+      <header class="view-heading"><div><p class="section-kicker">Preferências</p><h1>Ajustes</h1><p>Aparência, dados e manutenção da extensão.</p></div></header>
+      <div class="settings-grid">
+        <section class="panel settings-card"><h2>Aparência</h2><p>Escolha um contraste confortável.</p><div class="theme-picker" role="radiogroup" aria-label="Tema"><button type="button" data-theme="obsidian" aria-pressed="true"><span class="theme-preview theme-obsidian"></span>Obsidian</button><button type="button" data-theme="midnight" aria-pressed="false"><span class="theme-preview theme-midnight"></span>Midnight</button><button type="button" data-theme="graphite" aria-pressed="false"><span class="theme-preview theme-graphite"></span>Graphite</button><button type="button" data-theme="light" aria-pressed="false"><span class="theme-preview theme-light"></span>Claro</button><button type="button" data-theme="forest" aria-pressed="false"><span class="theme-preview theme-forest"></span>Floresta</button><button type="button" data-theme="violet" aria-pressed="false"><span class="theme-preview theme-violet"></span>Violeta</button><button type="button" data-theme="ember" aria-pressed="false"><span class="theme-preview theme-ember"></span>Âmbar</button><button type="button" data-theme="rose" aria-pressed="false"><span class="theme-preview theme-rose"></span>Rosa</button></div></section>
+        <section class="panel settings-card"><h2>Backup da extensão</h2><p>Inclui atalhos, grupos, automações, histórico e preferências.</p><div class="settings-actions"><button id="export-backup-btn" class="button button-primary" type="button">Exportar backup</button><label class="button button-secondary file-button">Importar backup<input id="import-backup-file" type="file" accept="application/json,.json"></label></div></section>
+        <section class="panel settings-card danger-zone"><h2>Manutenção</h2><p>Restaure os atalhos, grupos, automações, histórico e tema da extensão.</p><button id="reset-extension-btn" class="button button-danger" type="button">Restaurar extensão</button></section>
       </div>
-    </div>
-
-    <!-- View 3: Automations & Scratchpad View -->
-    <div id="automations-view" class="view-panel">
-      <div class="automations-container">
-        <div class="panel-card">
-          <div class="panel-card-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>Agendador de Guias do Chrome</div>
-          <form id="automation-form" class="automation-single-line-form">
-            <input type="text" id="auto-url" class="automation-url-input" placeholder="Endereço da guia (ex: github.com)..." required>
-            <input type="time" id="auto-time" class="automation-time-input" required>
-            <button type="submit" class="btn btn-primary btn-sm" title="Agendar Guia"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
-          </form>
-          <div id="alarms-list" class="alarms-list"></div>
-        </div>
-
-        <div class="panel-card">
-          <div class="panel-card-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>Bloco de Notas Rápido</div>
-          <textarea id="scratchpad" class="scratchpad-textarea" placeholder="Anotações rápidas ou rascunho de código... Salvo em tempo real."></textarea>
-          <div class="notes-footer-row"><span id="notes-char-counter">0 caracteres</span><span id="notes-status">Salvo automaticamente</span></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- View 4: NEWS & TRENDING HUB PANEL -->
-    <div id="news-view" class="view-panel">
-      <div class="news-container">
-        <div class="news-control-header">
-          <div class="news-header-top-row">
-            <div style="font-weight:700; font-size:0.95rem; color:var(--text-primary);">Central de Notícias por Nicho</div>
-            <div style="display:flex; align-items:center; gap:0.5rem;">
-              <button id="news-translate-btn" class="news-translate-btn" title="Traduzir Notícias para Português"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10z"></path></svg><span>Traduzir PT-BR</span></button>
-              <div class="news-search-box"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><input type="text" id="news-search-input" placeholder="Pesquisar nas notícias..."></div>
-            </div>
-          </div>
-
-          <div id="niche-pills-bar" class="niche-pills-bar">
-            <button class="niche-pill active" data-niche="tech">Tech & Inovação</button>
-            <button class="niche-pill" data-niche="ai">Inteligência Artificial</button>
-            <button class="niche-pill" data-niche="dev">Dev.to Articles</button>
-            <button class="niche-pill" data-niche="hackernews">Hacker News</button>
-            <button class="niche-pill" data-niche="github">GitHub Trends</button>
-            <button id="add-custom-niche-btn" class="btn btn-secondary btn-sm" style="margin-left:0.4rem;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Criar Nicho</button>
-          </div>
-
-          <div id="news-date-filters-bar" class="news-date-filters-bar"></div>
-        </div>
-
-        <div id="news-grid" class="news-grid"></div>
-      </div>
-    </div>
-
-    <!-- View 5: FULL SETTINGS STUDIO -->
-    <div id="settings-view" class="view-panel">
-      <div class="settings-full-container">
-        
-        <div class="settings-subnav">
-          <button class="settings-nav-btn active" data-settings-tab="settings-themes-tab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line></svg>Aparência & Temas</button>
-          <button class="settings-nav-btn" data-settings-tab="settings-tags-tab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gerenciador de Tags</button>
-          <button class="settings-nav-btn" data-settings-tab="settings-backup-tab"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Backup & Restauração</button>
-        </div>
-
-        <div id="settings-themes-tab" class="settings-panel-section active">
-          <div class="panel-card" style="padding: 1rem 1.15rem;">
-            <div class="panel-card-title" style="font-size:0.88rem; margin-bottom:0.6rem;">Temas de Cores Instantâneos (12 Opções)</div>
-            
-            <div class="compact-theme-grid">
-              <div class="theme-card active" data-theme="zinc"><div class="theme-swatch" style="background:#18181b; border:1px solid #3b82f6;"></div>Zinc Dark</div>
-              <div class="theme-card" data-theme="amoled"><div class="theme-swatch" style="background:#000000; border:1px solid #666;"></div>AMOLED Black</div>
-              <div class="theme-card" data-theme="midnight"><div class="theme-swatch" style="background:#0b0f19; border:1px solid #6366f1;"></div>Midnight Blue</div>
-              <div class="theme-card" data-theme="emerald"><div class="theme-swatch" style="background:#061412; border:1px solid #10b981;"></div>Cyber Emerald</div>
-              <div class="theme-card" data-theme="dracula"><div class="theme-swatch" style="background:#282a36; border:1px solid #bd93f9;"></div>Dracula Purple</div>
-              <div class="theme-card" data-theme="nord"><div class="theme-swatch" style="background:#2e3440; border:1px solid #88c0d0;"></div>Nord Frost</div>
-              <div class="theme-card" data-theme="tokyo"><div class="theme-swatch" style="background:#1a1b26; border:1px solid #7aa2f7;"></div>Tokyo Night</div>
-              <div class="theme-card" data-theme="catppuccin"><div class="theme-swatch" style="background:#1e1e2e; border:1px solid #cba6f7;"></div>Catppuccin</div>
-              <div class="theme-card" data-theme="sunset"><div class="theme-swatch" style="background:#1f1212; border:1px solid #f97316;"></div>Sunset Amber</div>
-              <div class="theme-card" data-theme="rose"><div class="theme-swatch" style="background:#191724; border:1px solid #eb6f92;"></div>Rose Pine</div>
-              <div class="theme-card" data-theme="cyberpunk"><div class="theme-swatch" style="background:#0f051d; border:1px solid #f43f5e;"></div>Cyber Neon</div>
-              <div class="theme-card" data-theme="monokai"><div class="theme-swatch" style="background:#2d2a2e; border:1px solid #ffd866;"></div>Monokai Pro</div>
-            </div>
-
-            <div style="margin-top:1.15rem; border-top:1px solid var(--card-border); padding-top:0.9rem;">
-              <div class="panel-card-title" style="font-size:0.88rem; margin-bottom:0.6rem;">Plano de Fundo (Wallpapers HD & GIFs Animados)</div>
-
-              <div class="compact-theme-grid">
-                <div class="theme-card wallpaper-card active" data-wallpaper-preset="none"><div class="theme-swatch" style="background:var(--accent-glow);"></div>Glow Padrão</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="cyberpunk"><div class="theme-swatch" style="background:#f43f5e;"></div>Cyberpunk</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="nebula"><div class="theme-swatch" style="background:#8b5cf6;"></div>Nebula</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="architecture"><div class="theme-swatch" style="background:#38bdf8;"></div>Architecture</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="nature"><div class="theme-swatch" style="background:#10b981;"></div>Dark Forest</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="matrix"><div class="theme-swatch" style="background:#22c55e;"></div>Matrix Rain</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="synthwave"><div class="theme-swatch" style="background:#ec4899;"></div>Synthwave</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="minimal"><div class="theme-swatch" style="background:#64748b;"></div>Minimal Waves</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="cyber-gif"><div class="theme-swatch" style="background:#e11d48;"></div>Cyber GIF</div>
-                <div class="theme-card wallpaper-card" data-wallpaper-preset="synthwave-gif"><div class="theme-swatch" style="background:#f43f5e;"></div>Retro GIF</div>
-              </div>
-
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.75rem; margin-top:0.85rem;">
-                <div class="form-group" style="margin:0;">
-                  <label for="wallpaper-custom-url" style="font-size:0.75rem;">Ou Imagem/GIF por URL</label>
-                  <div style="display:flex; gap:0.4rem;">
-                    <input type="url" id="wallpaper-custom-url" placeholder="https://exemplo.com/fundo.gif" style="flex:1; padding:0.35rem 0.55rem; font-size:0.76rem;">
-                    <button id="apply-wallpaper-url-btn" class="btn btn-primary btn-sm">Aplicar</button>
-                  </div>
-                </div>
-                <div class="form-group" style="margin:0;">
-                  <label style="font-size:0.75rem;">Ou Arquivo do Computador (Foto / GIF)</label>
-                  <label class="custom-file-upload-label" style="padding:0.35rem 0.6rem; font-size:0.76rem; width:100%; justify-content:center;">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                    <span>Upload Foto/GIF...</span>
-                    <input type="file" id="wallpaper-custom-file" accept="image/*,.gif" class="hidden-file-input">
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="settings-tags-tab" class="settings-panel-section">
-          <div class="panel-card">
-            <div class="panel-card-title"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>Gerenciador de Tags & Categorias</div>
-            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.75rem;">Crie tags personalizadas ou clique nas sugestões para organizar os atalhos da tela inicial.</p>
-
-            <form id="create-tag-form" class="create-tag-inline-form">
-              <input type="text" id="new-tag-name-input" placeholder="Digite o nome da nova tag (ex: Projeto X, Estudos)..." required autocomplete="off">
-              <button type="submit" class="btn btn-primary btn-sm"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>Criar Tag</button>
-            </form>
-
-            <div class="tag-section-wrapper" style="margin-top:1.25rem;">
-              <div class="tag-section-label"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg><span>Sugestões Populares (Clique para Adicionar)</span></div>
-              <div id="suggested-tags-grid" class="suggested-tags-grid">
-                <button class="tag-suggestion-pill" data-suggest-tag="Produtividade">Produtividade</button>
-                <button class="tag-suggestion-pill" data-suggest-tag="IA & Prompts">IA & Prompts</button>
-                <button class="tag-suggestion-pill" data-suggest-tag="ReoliOS">ReoliOS</button>
-                <button class="tag-suggestion-pill" data-suggest-tag="Startups">Startups</button>
-                <button class="tag-suggestion-pill" data-suggest-tag="Dev & Código">Dev & Código</button>
-                <button class="tag-suggestion-pill" data-suggest-tag="Finanças">Finanças</button>
-                <button class="tag-suggestion-pill" data-suggest-tag="Estudos">Estudos</button>
-                <button class="tag-suggestion-pill" data-suggest-tag="Automação">Automação</button>
-              </div>
-            </div>
-
-            <div class="tag-section-wrapper" style="margin-top:1.25rem;">
-              <div class="tag-section-label"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><span>Tags Ativas em Uso</span></div>
-              <div id="active-tags-grid" class="active-tags-grid"></div>
-            </div>
-          </div>
-        </div>
-
-        <div id="settings-backup-tab" class="settings-panel-section">
-          <div class="panel-card">
-            <div class="panel-card-title">Backup & Restauração de Dados</div>
-            <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">Exporte todas as suas configurações, atalhos e tags em um arquivo JSON de backup ou restaure dados salvos anteriormente.</p>
-
-            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-              <button id="export-backup-btn" class="btn btn-primary"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>Exportar Backup JSON</button>
-              <label class="btn btn-secondary custom-file-upload-btn" style="margin:0;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>Importar Backup JSON<input type="file" id="import-backup-file" accept=".json" class="hidden-file-input"></label>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
+    </section>
   </main>
 
-  <!-- Interactive Shortcut Creation & Edit Modal -->
-  <div id="shortcut-modal" class="modal-backdrop">
-    <div class="modal-card animate-entrance">
-      <div class="modal-header">
-        <span id="shortcut-modal-title" class="modal-title">Studio de Criação de Atalhos</span>
-        <button id="close-shortcut-modal-btn" class="modal-close-btn">&times;</button>
-      </div>
-      
-      <form id="shortcut-modal-form" class="modal-form-body">
-        <input type="hidden" id="shortcut-modal-id">
-
-        <div class="form-group">
-          <label for="shortcut-modal-name">Nome do Atalho</label>
-          <input type="text" id="shortcut-modal-name" placeholder="Ex: GitHub, ChatGPT, ReoliOS" required>
-        </div>
-
-        <div class="form-group">
-          <label for="shortcut-modal-url">URL de Destino</label>
-          <input type="text" id="shortcut-modal-url" placeholder="https://github.com" required>
-        </div>
-
-        <div class="form-group">
-          <label for="shortcut-modal-tags">Tags (separadas por vírgula)</label>
-          <input type="text" id="shortcut-modal-tags" placeholder="Ex: Dev, IA, Mídia, Estudos">
-        </div>
-
-        <div class="form-group">
-          <label for="shortcut-modal-icon-url">URL do Ícone (Opcional)</label>
-          <input type="url" id="shortcut-modal-icon-url" placeholder="https://exemplo.com/logo.png">
-        </div>
-
-        <div class="form-group">
-          <label>Ou Carregar Imagem Local do Computador</label>
-          <label class="custom-file-upload-label">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            <span id="shortcut-modal-file-name">Escolher Imagem do Computador...</span>
-            <input type="file" id="shortcut-modal-file" accept="image/*" class="hidden-file-input">
-          </label>
-        </div>
-
-        <div style="display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1rem;">
-          <button type="button" id="cancel-shortcut-modal-btn" class="btn btn-secondary">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Salvar Atalho</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div id="toast-container" class="toast-container"></div>
-
-  <!-- Scripts -->
-  <script src="js/storage.js"></script>
-  <script src="js/shortcuts.js"></script>
-  <script src="js/bookmarks.js"></script>
-  <script src="js/automations.js"></script>
-  <script src="js/leftsidebar.js"></script>
-  <script src="js/news.js"></script>
-  <script src="js/themes.js"></script>
-  <script src="js/app.js"></script>
+  <aside id="shortcut-popup" class="editor-popup" popover aria-labelledby="shortcut-popup-title"><header class="popup-header"><h2 id="shortcut-popup-title">Novo atalho</h2><button id="close-shortcut-popup-btn" class="icon-button" type="button" aria-label="Fechar">×</button></header><form id="shortcut-form"><input id="shortcut-id" type="hidden"><label class="field"><span>Nome</span><input id="shortcut-name" type="text" maxlength="60" required></label><label class="field"><span>Endereço</span><input id="shortcut-url" type="url" placeholder="https://exemplo.com" required></label><label class="field"><span>Tags <small>(separadas por vírgula)</small></span><input id="shortcut-tags" type="text" maxlength="160" placeholder="Dev, IA, Estudos"></label><label class="field"><span>URL do ícone <small>(opcional)</small></span><input id="shortcut-icon-url" type="url" placeholder="https://exemplo.com/logo.png"></label><label class="shortcut-file-field"><span>Ou use uma imagem do computador</span><span id="shortcut-file-name" class="button button-secondary">Escolher imagem</span><input id="shortcut-file" type="file" accept="image/*"></label><p id="shortcut-form-error" class="form-error" role="alert" hidden></p><div class="popup-actions"><button id="cancel-shortcut-popup-btn" class="button button-secondary" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar atalho</button></div></form></aside>
+  <aside id="shortcut-group-popup" class="editor-popup group-editor-popup" popover aria-labelledby="shortcut-group-popup-title"><header class="popup-header"><h2 id="shortcut-group-popup-title">Novo grupo</h2><button id="close-shortcut-group-popup-btn" class="icon-button" type="button" aria-label="Fechar">×</button></header><form id="shortcut-group-form"><input id="shortcut-group-id" type="hidden"><label class="field"><span>Nome do grupo</span><input id="shortcut-group-input" type="text" maxlength="40" placeholder="Ex.: Trabalho" required></label><p id="shortcut-group-help">Os atalhos selecionados serão movidos para este grupo.</p><div class="popup-actions"><button id="cancel-shortcut-group-popup-btn" class="button button-secondary" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar grupo</button></div></form></aside>
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script src="js/storage.js"></script><script src="js/automation-scheduler.js"></script><script src="js/shortcuts.js"></script><script src="js/automations.js"></script><script src="js/themes.js"></script><script src="js/backup.js"></script><script src="js/app.js"></script>
 </body>
 </html>
