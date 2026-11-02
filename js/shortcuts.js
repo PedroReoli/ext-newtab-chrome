@@ -1,4 +1,4 @@
-/* global ReoliStorage, showToast */
+/* global ReoliStorage, ReoliIcons, showToast */
 let reoliShortcuts = [];
 let reoliShortcutGroups = [];
 let activeShortcutTag = 'Todos';
@@ -13,6 +13,9 @@ let shortcutPopupReturnFocus = null;
 let pendingShortcutIcon = '';
 let editingShortcutIcon = '';
 let editingShortcutGroupId = null;
+let shortcutCustomizeMode = false;
+let shortcutPointerDrag = null;
+let shortcutDragGhost = null;
 
 const LEGACY_SHORTCUTS_KEY = 'custom_newtab_shortcuts';
 const LEGACY_VIEW_KEY = 'custom_newtab_shortcuts_view_mode';
@@ -130,13 +133,13 @@ function createShortcutIcon(shortcut) {
   return wrapper;
 }
 
-function createShortcutAction(label, symbol, handler, danger = false) {
+function createShortcutAction(label, iconName, handler, danger = false) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = `shortcut-action${danger ? ' danger' : ''}`;
   button.title = label;
   button.setAttribute('aria-label', label);
-  button.textContent = symbol;
+  button.append(ReoliIcons.create(iconName, 14));
   button.addEventListener('click', event => { event.stopPropagation(); handler(); });
   return button;
 }
@@ -180,45 +183,200 @@ function selectShortcut(id, event) {
   updateShortcutSelection();
 }
 
-function moveBatchBefore(targetId) {
+function shortcutIdsForDrag(id) {
+  if (!selectedShortcutIds.has(id)) return [id];
+  return visibleShortcuts().filter(item => selectedShortcutIds.has(item.id)).map(item => item.id);
+}
+
+function clearShortcutDragIndicators() {
+  document.querySelectorAll('.dragging, .drop-before, .drop-after, .drop-group, .drop-end').forEach(item => {
+    item.classList.remove('dragging', 'drop-before', 'drop-after', 'drop-group', 'drop-end');
+  });
+  document.getElementById('shortcuts-grid')?.classList.remove('is-dragging');
+}
+
+function beginShortcutDrag(id) {
+  draggedShortcutId = id;
+  draggedShortcutIds = shortcutIdsForDrag(id);
+  suppressShortcutClick = true;
+  document.getElementById('shortcuts-grid')?.classList.add('is-dragging');
+  draggedShortcutIds.forEach(itemId => document.querySelector(`[data-shortcut-id="${CSS.escape(itemId)}"]`)?.classList.add('dragging'));
+}
+
+function finishShortcutDrag() {
+  draggedShortcutId = null;
+  draggedShortcutIds = [];
+  shortcutPointerDrag = null;
+  shortcutDragGhost?.remove();
+  shortcutDragGhost = null;
+  clearShortcutDragIndicators();
+  setTimeout(() => { suppressShortcutClick = false; }, 80);
+}
+
+function createShortcutDragGhost(x = -9999, y = -9999) {
+  shortcutDragGhost?.remove();
+  const ghost = document.createElement('div');
+  ghost.className = 'shortcut-drag-ghost';
+  ghost.textContent = draggedShortcutIds.length === 1 ? '1 atalho' : `${draggedShortcutIds.length} atalhos`;
+  ghost.style.left = `${x}px`;
+  ghost.style.top = `${y}px`;
+  document.body.append(ghost);
+  shortcutDragGhost = ghost;
+  return ghost;
+}
+
+function shortcutDropPosition(card, clientX, clientY) {
+  const rect = card.getBoundingClientRect();
+  const tableMode = document.getElementById('shortcuts-grid').classList.contains('mode-table');
+  return tableMode
+    ? (clientY < rect.top + rect.height / 2 ? 'before' : 'after')
+    : (clientX < rect.left + rect.width / 2 ? 'before' : 'after');
+}
+
+function markShortcutDropTarget(card, position) {
+  document.querySelectorAll('.drop-before, .drop-after, .drop-group, .drop-end').forEach(item => item.classList.remove('drop-before', 'drop-after', 'drop-group', 'drop-end'));
+  if (!card || draggedShortcutIds.includes(card.dataset.shortcutId)) return;
+  card.classList.add(position === 'after' ? 'drop-after' : 'drop-before');
+}
+
+function moveBatchRelativeTo(targetId, position) {
   const ids = draggedShortcutIds.filter(id => id !== targetId);
   if (!ids.length) return;
   const moving = reoliShortcuts.filter(item => ids.includes(item.id));
   reoliShortcuts = reoliShortcuts.filter(item => !ids.includes(item.id));
   const targetIndex = reoliShortcuts.findIndex(item => item.id === targetId);
-  reoliShortcuts.splice(targetIndex < 0 ? reoliShortcuts.length : targetIndex, 0, ...moving);
+  const insertAt = targetIndex < 0 ? reoliShortcuts.length : targetIndex + (position === 'after' ? 1 : 0);
+  reoliShortcuts.splice(insertAt, 0, ...moving);
+}
+
+function moveBatchToEnd() {
+  const ids = [...draggedShortcutIds];
+  const moving = reoliShortcuts.filter(item => ids.includes(item.id));
+  reoliShortcuts = reoliShortcuts.filter(item => !ids.includes(item.id));
+  const groupId = activeShortcutGroupId || null;
+  const lastGroupIndex = reoliShortcuts.reduce((result, item, index) => item.groupId === groupId ? index : result, -1);
+  reoliShortcuts.splice(lastGroupIndex + 1, 0, ...moving);
+}
+
+async function saveShortcutDrop(message) {
+  await saveReoliShortcuts();
+  renderShortcuts();
+  showToast(message);
+}
+
+async function moveDraggedShortcutsToGroup(group) {
+  const movedIds = [...draggedShortcutIds];
+  movedIds.forEach(id => {
+    const item = reoliShortcuts.find(shortcut => shortcut.id === id);
+    if (item) item.groupId = group.id;
+  });
+  clearShortcutSelection();
+  await saveShortcutDrop(`${movedIds.length} atalho${movedIds.length === 1 ? '' : 's'} movido${movedIds.length === 1 ? '' : 's'} para ${group.name}.`);
+}
+
+function pointerDropTarget(clientX, clientY) {
+  const element = document.elementFromPoint(clientX, clientY);
+  const group = element?.closest('.shortcut-group-card');
+  if (group) return { type: 'group', element: group, groupId: group.dataset.groupId };
+  const card = element?.closest('.shortcut-card[data-shortcut-id]');
+  if (card && !draggedShortcutIds.includes(card.dataset.shortcutId)) {
+    return { type: 'shortcut', element: card, id: card.dataset.shortcutId, position: shortcutDropPosition(card, clientX, clientY) };
+  }
+  const end = element?.closest('.add-shortcut-card');
+  return end ? { type: 'end', element: end } : null;
+}
+
+function updatePointerDropTarget(clientX, clientY) {
+  document.querySelectorAll('.drop-before, .drop-after, .drop-group, .drop-end').forEach(item => item.classList.remove('drop-before', 'drop-after', 'drop-group', 'drop-end'));
+  const target = pointerDropTarget(clientX, clientY);
+  shortcutPointerDrag.dropTarget = target;
+  if (target?.type === 'shortcut') target.element.classList.add(target.position === 'after' ? 'drop-after' : 'drop-before');
+  if (target?.type === 'group') target.element.classList.add('drop-group');
+  if (target?.type === 'end') target.element.classList.add('drop-end');
+}
+
+async function commitPointerShortcutDrop() {
+  const target = shortcutPointerDrag?.dropTarget;
+  if (!target) return;
+  if (target.type === 'shortcut') {
+    moveBatchRelativeTo(target.id, target.position);
+    await saveShortcutDrop(`${draggedShortcutIds.length} atalho${draggedShortcutIds.length === 1 ? '' : 's'} reposicionado${draggedShortcutIds.length === 1 ? '' : 's'}.`);
+  } else if (target.type === 'end') {
+    moveBatchToEnd();
+    await saveShortcutDrop(`${draggedShortcutIds.length} atalho${draggedShortcutIds.length === 1 ? '' : 's'} movido${draggedShortcutIds.length === 1 ? '' : 's'} para o fim.`);
+  } else if (target.type === 'group') {
+    const group = reoliShortcutGroups.find(item => item.id === target.groupId);
+    if (group) await moveDraggedShortcutsToGroup(group);
+  }
+}
+
+function attachPointerShortcutDrag(card, shortcut) {
+  let pressTimer = null;
+  let start = null;
+  const cancelPress = () => { clearTimeout(pressTimer); pressTimer = null; start = null; };
+  card.addEventListener('pointerdown', event => {
+    if (event.pointerType === 'mouse' || event.button !== 0 || event.target.closest('button')) return;
+    start = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
+    pressTimer = setTimeout(() => {
+      card.setPointerCapture(event.pointerId);
+      beginShortcutDrag(shortcut.id);
+      shortcutPointerDrag = { pointerId: event.pointerId, dropTarget: null };
+      createShortcutDragGhost(event.clientX + 14, event.clientY + 14);
+      if (navigator.vibrate) navigator.vibrate(18);
+    }, 260);
+  });
+  card.addEventListener('pointermove', event => {
+    if (!start) return;
+    if (!shortcutPointerDrag) {
+      if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > 9) cancelPress();
+      return;
+    }
+    event.preventDefault();
+    shortcutDragGhost.style.left = `${event.clientX + 14}px`;
+    shortcutDragGhost.style.top = `${event.clientY + 14}px`;
+    updatePointerDropTarget(event.clientX, event.clientY);
+    if (event.clientY < 54) window.scrollBy({ top: -8, behavior: 'auto' });
+    else if (event.clientY > window.innerHeight - 54) window.scrollBy({ top: 8, behavior: 'auto' });
+  });
+  const finishPointer = async event => {
+    clearTimeout(pressTimer);
+    if (!shortcutPointerDrag || shortcutPointerDrag.pointerId !== event.pointerId) { cancelPress(); return; }
+    await commitPointerShortcutDrop();
+    finishShortcutDrag();
+    start = null;
+  };
+  card.addEventListener('pointerup', finishPointer);
+  card.addEventListener('pointercancel', event => {
+    if (shortcutPointerDrag?.pointerId === event.pointerId) finishShortcutDrag();
+    cancelPress();
+  });
 }
 
 function attachShortcutDrag(card, shortcut) {
   card.draggable = true;
   card.addEventListener('dragstart', event => {
-    draggedShortcutId = shortcut.id;
-    if (!selectedShortcutIds.has(shortcut.id)) selectedShortcutIds = new Set([shortcut.id]);
-    draggedShortcutIds = [...selectedShortcutIds];
-    updateShortcutSelection();
-    suppressShortcutClick = true;
+    beginShortcutDrag(shortcut.id);
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setData('text/plain', JSON.stringify(draggedShortcutIds));
-    draggedShortcutIds.forEach(id => document.querySelector(`[data-shortcut-id="${CSS.escape(id)}"]`)?.classList.add('dragging'));
+    const ghost = createShortcutDragGhost();
+    event.dataTransfer.setDragImage(ghost, 22, 18);
   });
-  card.addEventListener('dragend', () => {
-    draggedShortcutId = null;
-    draggedShortcutIds = [];
-    document.querySelectorAll('.dragging, .drop-before, .drop-group').forEach(item => item.classList.remove('dragging', 'drop-before', 'drop-group'));
-    setTimeout(() => { suppressShortcutClick = false; }, 0);
-  });
+  card.addEventListener('dragend', finishShortcutDrag);
   card.addEventListener('dragover', event => {
-    if (!draggedShortcutId || draggedShortcutId === shortcut.id) return;
+    if (!draggedShortcutId || draggedShortcutIds.includes(shortcut.id)) return;
     event.preventDefault();
-    card.classList.add('drop-before');
+    event.dataTransfer.dropEffect = 'move';
+    markShortcutDropTarget(card, shortcutDropPosition(card, event.clientX, event.clientY));
   });
-  card.addEventListener('dragleave', () => card.classList.remove('drop-before'));
+  card.addEventListener('dragleave', event => { if (!card.contains(event.relatedTarget)) card.classList.remove('drop-before', 'drop-after'); });
   card.addEventListener('drop', async event => {
     event.preventDefault();
-    moveBatchBefore(shortcut.id);
-    await saveReoliShortcuts();
-    renderShortcuts();
+    const count = draggedShortcutIds.length;
+    moveBatchRelativeTo(shortcut.id, shortcutDropPosition(card, event.clientX, event.clientY));
+    await saveShortcutDrop(`${count} atalho${count === 1 ? '' : 's'} reposicionado${count === 1 ? '' : 's'}.`);
+    finishShortcutDrag();
   });
+  attachPointerShortcutDrag(card, shortcut);
 }
 
 function renderShortcutTags(container, tags) {
@@ -249,13 +407,16 @@ function createShortcutCard(shortcut) {
   const tags = document.createElement('span');
   tags.className = 'shortcut-tags';
   renderShortcutTags(tags, shortcut.tags);
-  const actions = document.createElement('span');
-  actions.className = 'shortcut-actions';
-  actions.append(
-    createShortcutAction(`Editar ${shortcut.name}`, '✎', () => openShortcutPopup(shortcut)),
-    createShortcutAction(`Excluir ${shortcut.name}`, '×', () => deleteShortcut(shortcut.id), true)
-  );
-  card.append(main, tags, actions);
+  card.append(main, tags);
+  if (shortcutCustomizeMode) {
+    const actions = document.createElement('span');
+    actions.className = 'shortcut-actions';
+    actions.append(
+      createShortcutAction(`Editar ${shortcut.name}`, 'pencil', () => openShortcutPopup(shortcut)),
+      createShortcutAction(`Excluir ${shortcut.name}`, 'trash', () => deleteShortcut(shortcut.id), true)
+    );
+    card.append(actions);
+  }
   const open = event => {
     if (suppressShortcutClick || event.target.closest('button')) return;
     if (event.shiftKey || event.ctrlKey || event.metaKey) {
@@ -270,7 +431,11 @@ function createShortcutCard(shortcut) {
   card.addEventListener('click', open);
   card.addEventListener('auxclick', event => { if (event.button === 1) window.open(shortcut.url, '_blank'); });
   card.addEventListener('keydown', event => { if (event.key === 'Enter') open(event); });
-  card.addEventListener('contextmenu', event => { event.preventDefault(); openShortcutPopup(shortcut); });
+  card.addEventListener('contextmenu', event => {
+    if (!shortcutCustomizeMode) return;
+    event.preventDefault();
+    openShortcutPopup(shortcut);
+  });
   attachShortcutDrag(card, shortcut);
   return card;
 }
@@ -311,6 +476,21 @@ function createAddShortcutCard() {
   label.textContent = 'Adicionar';
   button.append(icon, label);
   button.addEventListener('click', () => openShortcutPopup());
+  button.addEventListener('dragover', event => {
+    if (!draggedShortcutIds.length) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.drop-before, .drop-after, .drop-group').forEach(item => item.classList.remove('drop-before', 'drop-after', 'drop-group'));
+    button.classList.add('drop-end');
+  });
+  button.addEventListener('dragleave', event => { if (!button.contains(event.relatedTarget)) button.classList.remove('drop-end'); });
+  button.addEventListener('drop', async event => {
+    event.preventDefault();
+    const count = draggedShortcutIds.length;
+    moveBatchToEnd();
+    await saveShortcutDrop(`${count} atalho${count === 1 ? '' : 's'} movido${count === 1 ? '' : 's'} para o fim.`);
+    finishShortcutDrag();
+  });
   return button;
 }
 
@@ -349,6 +529,7 @@ async function deleteShortcutGroup(group) {
 function createShortcutGroupCard(group) {
   const card = document.createElement('article');
   card.className = 'shortcut-card shortcut-group-card';
+  card.dataset.groupId = group.id;
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
   const count = reoliShortcuts.filter(item => item.groupId === group.id).length;
@@ -361,26 +542,30 @@ function createShortcutGroupCard(group) {
   const total = document.createElement('span');
   total.className = 'shortcut-group-count';
   total.textContent = `${count} atalho${count === 1 ? '' : 's'}`;
-  const actions = document.createElement('span');
-  actions.className = 'shortcut-actions';
-  actions.append(
-    createShortcutAction(`Renomear ${group.name}`, '✎', () => openShortcutGroupPopup(group, [])),
-    createShortcutAction(`Excluir ${group.name}`, '×', () => deleteShortcutGroup(group), true)
-  );
-  card.append(icon, title, total, actions);
+  card.append(icon, title, total);
+  if (shortcutCustomizeMode) {
+    const actions = document.createElement('span');
+    actions.className = 'shortcut-actions';
+    actions.append(
+      createShortcutAction(`Renomear ${group.name}`, 'pencil', () => openShortcutGroupPopup(group, [])),
+      createShortcutAction(`Excluir ${group.name}`, 'trash', () => deleteShortcutGroup(group), true)
+    );
+    card.append(actions);
+  }
   card.addEventListener('click', event => { if (!event.target.closest('button')) openShortcutGroup(group.id); });
   card.addEventListener('keydown', event => { if (event.key === 'Enter') openShortcutGroup(group.id); });
-  card.addEventListener('dragover', event => { if (draggedShortcutIds.length) { event.preventDefault(); card.classList.add('drop-group'); } });
+  card.addEventListener('dragover', event => {
+    if (!draggedShortcutIds.length) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+    document.querySelectorAll('.drop-before, .drop-after, .drop-group, .drop-end').forEach(item => item.classList.remove('drop-before', 'drop-after', 'drop-group', 'drop-end'));
+    card.classList.add('drop-group');
+  });
   card.addEventListener('dragleave', () => card.classList.remove('drop-group'));
   card.addEventListener('drop', async event => {
     event.preventDefault();
-    const movedIds = [...draggedShortcutIds];
-    movedIds.forEach(id => { const item = reoliShortcuts.find(shortcut => shortcut.id === id); if (item) item.groupId = group.id; });
-    draggedShortcutIds = [];
-    await saveReoliShortcuts();
-    clearShortcutSelection();
-    renderShortcuts();
-    showToast(`${movedIds.length} atalho(s) movidos para ${group.name}.`);
+    await moveDraggedShortcutsToGroup(group);
+    finishShortcutDrag();
   });
   return card;
 }
@@ -394,13 +579,22 @@ function updateShortcutGroupContext() {
 
 function renderShortcuts() {
   const grid = document.getElementById('shortcuts-grid');
-  grid.className = `shortcuts-grid mode-${shortcutViewMode}`;
+  grid.className = `shortcuts-grid mode-${shortcutViewMode}${shortcutCustomizeMode ? ' is-customizing' : ''}`;
   grid.replaceChildren();
   updateShortcutGroupContext();
   if (!activeShortcutGroupId) reoliShortcutGroups.forEach(group => grid.append(createShortcutGroupCard(group)));
   visibleShortcuts().forEach(shortcut => grid.append(createShortcutCard(shortcut)));
   grid.append(createAddShortcutCard());
   updateShortcutSelection();
+}
+
+function setShortcutCustomizeMode(enabled) {
+  shortcutCustomizeMode = enabled;
+  const button = document.getElementById('customize-shortcuts-btn');
+  button.classList.toggle('active', enabled);
+  button.setAttribute('aria-pressed', String(enabled));
+  button.textContent = enabled ? 'Concluir' : 'Personalizar';
+  renderShortcuts();
 }
 
 function setShortcutViewMode(mode) {
@@ -499,6 +693,7 @@ async function initShortcutsModule() {
   renderShortcutFilters();
   setShortcutViewMode(shortcutViewMode);
   document.getElementById('add-shortcut-btn').addEventListener('click', () => openShortcutPopup());
+  document.getElementById('customize-shortcuts-btn').addEventListener('click', () => setShortcutCustomizeMode(!shortcutCustomizeMode));
   document.getElementById('shortcut-group-back').addEventListener('click', () => openShortcutGroup(null));
   document.getElementById('clear-shortcut-selection-btn').addEventListener('click', clearShortcutSelection);
   const createGroupButton = document.getElementById('create-shortcut-group-btn');

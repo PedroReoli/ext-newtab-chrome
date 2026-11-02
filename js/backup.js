@@ -1,20 +1,21 @@
 /* global ReoliStorage, showToast, renderShortcuts, renderAutomations, syncAutomationSchedules */
-const BACKUP_KEYS = ['reolitab_shortcuts', 'reolitab_shortcut_groups', 'reolitab_automations', 'reolitab_automation_history', 'reolitab_automations_enabled', 'reolitab_theme'];
+const BACKUP_KEYS = ['reolitab_shortcuts', 'reolitab_shortcut_groups', 'reolitab_automations', 'reolitab_automation_groups', 'reolitab_automation_history', 'reolitab_automations_enabled', 'reolitab_theme'];
 
 function validateBackup(data) {
   if (!data || typeof data !== 'object' || data.schemaVersion !== 1 || typeof data.values !== 'object') return false;
   if (data.values.reolitab_shortcuts && !Array.isArray(data.values.reolitab_shortcuts)) return false;
   if (data.values.reolitab_shortcut_groups && !Array.isArray(data.values.reolitab_shortcut_groups)) return false;
   if (data.values.reolitab_automations && !Array.isArray(data.values.reolitab_automations)) return false;
+  if (data.values.reolitab_automation_groups && !Array.isArray(data.values.reolitab_automation_groups)) return false;
   if (data.values.reolitab_automation_history && !Array.isArray(data.values.reolitab_automation_history)) return false;
   return Object.keys(data.values).every(key => BACKUP_KEYS.includes(key));
 }
 
 async function exportExtensionBackup() {
   const values = await ReoliStorage.get(BACKUP_KEYS);
-  const payload = { product: 'ReoliTab', schemaVersion: 1, extensionVersion: '58.0.0', exportedAt: new Date().toISOString(), values };
+  const payload = { product: 'Nova Guia', schemaVersion: 1, extensionVersion: '58.0.0', exportedAt: new Date().toISOString(), values };
   const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
-  const link = document.createElement('a'); link.href = url; link.download = `ReoliTab-backup-${new Date().toISOString().slice(0, 10)}.json`; link.click();
+  const link = document.createElement('a'); link.href = url; link.download = `Nova-Guia-backup-${new Date().toISOString().slice(0, 10)}.json`; link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   showToast('Backup exportado.');
 }

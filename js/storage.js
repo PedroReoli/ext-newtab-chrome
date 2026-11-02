@@ -4,6 +4,7 @@
     reolitab_shortcuts: null,
     reolitab_shortcut_groups: [],
     reolitab_automations: [],
+    reolitab_automation_groups: [],
     reolitab_automation_history: [],
     reolitab_automations_enabled: true,
     reolitab_theme: 'obsidian'

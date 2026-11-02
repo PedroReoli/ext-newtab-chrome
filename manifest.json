@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "ReoliTab",
+  "name": "Nova Guia",
   "version": "58.0.0",
   "description": "Nova guia para organizar atalhos, grupos e automações de páginas.",
   "permissions": ["alarms", "storage", "tabs"],
